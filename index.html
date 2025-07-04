@@ -76,7 +76,7 @@
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
         }
-        #zoomModal, #metadataModal {
+        #zoomModal, #metadataModal, #apiKeyModal {
             transition: opacity 0.3s ease;
         }
         .copy-btn-tooltip .tooltip-text {
@@ -121,7 +121,10 @@
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
+                    <button id="api-key-btn" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </button>
+                    <button id="theme-toggle" type="button" class="ml-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
                         <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
                         <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 10.607a1 1 0 011.414 0l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM17 12a1 1 0 100 2h-1a1 1 0 100-2h1zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
                     </button>
@@ -178,6 +181,24 @@
             </div>
             <div id="metadataModalContent" class="space-y-4">
                 <!-- Metadata content will be injected here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-[101] hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4 border-b pb-3 dark:border-gray-600">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white">Pengaturan API Key</h3>
+                <button id="closeApiKeyModalBtn" class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white text-2xl">&times;</button>
+            </div>
+            <div class="space-y-4">
+                <p class="text-sm text-gray-600 dark:text-gray-400">Masukkan API Key Google AI Studio Anda. Kunci ini akan disimpan di browser Anda untuk penggunaan di masa mendatang.</p>
+                <div>
+                    <label for="globalApiKeyInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Google AI API Key</label>
+                    <input type="password" id="globalApiKeyInput" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <button id="saveApiKeyBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">Simpan Kunci</button>
             </div>
         </div>
     </div>
@@ -285,10 +306,46 @@
                 showAlert('Gagal menyalin teks.');
             }
         }
+        
+        // --- API Key Management ---
+        const apiKeyBtn = document.getElementById('api-key-btn');
+        const apiKeyModal = document.getElementById('apiKeyModal');
+        const closeApiKeyModalBtn = document.getElementById('closeApiKeyModalBtn');
+        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+        const globalApiKeyInput = document.getElementById('globalApiKeyInput');
+        let globalApiKey = '';
+
+        function loadApiKey() {
+            const savedKey = localStorage.getItem('googleAiApiKey');
+            if (savedKey) {
+                globalApiKey = savedKey;
+                globalApiKeyInput.value = savedKey;
+            }
+        }
+
+        function saveApiKey() {
+            const newKey = globalApiKeyInput.value.trim();
+            if (newKey) {
+                globalApiKey = newKey;
+                localStorage.setItem('googleAiApiKey', newKey);
+                showAlert('API Key berhasil disimpan.');
+                apiKeyModal.classList.add('hidden');
+            } else {
+                localStorage.removeItem('googleAiApiKey');
+                globalApiKey = '';
+                showAlert('API Key dihapus.');
+            }
+        }
+
+        apiKeyBtn.addEventListener('click', () => apiKeyModal.classList.remove('hidden'));
+        closeApiKeyModalBtn.addEventListener('click', () => apiKeyModal.classList.add('hidden'));
+        saveApiKeyBtn.addEventListener('click', saveApiKey);
 
 
         // --- Initialize All Modules ---
-        (function initializeAppModules() {
+        document.addEventListener('DOMContentLoaded', () => {
+            loadApiKey();
+            
             // --- Metadata Generator ---
             (function metadataGenerator() {
                 const page = document.getElementById('page-metadata-generator');
@@ -308,19 +365,6 @@
                                         <p class="font-semibold">Seret & lepas file di sini</p>
                                         <p class="text-sm">atau klik untuk memilih file</p>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="meta-modelSelector" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">2. Pilih Model AI</label>
-                                    <select id="meta-modelSelector" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                        <option value="gemini-2.0-flash" selected>Gemini 2.0 Flash (Bawaan, Cepat)</option>
-                                        <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (Kualitas Tinggi)</option>
-                                    </select>
-                                </div>
-                                <div id="meta-apiKeySection" class="hidden">
-                                    <label for="meta-apiKeyInput" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">API Key Anda</label>
-                                    <input type="password" id="meta-apiKeyInput" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg" placeholder="Masukkan API Key Gemini Anda">
                                 </div>
                             </div>
                             <div class="relative flex items-start justify-center">
@@ -368,9 +412,6 @@
                 const dropZone = page.querySelector('#meta-dropZone');
                 const fileInput = page.querySelector('#meta-fileInput');
                 const generateBtn = page.querySelector('#meta-generateBtn');
-                const modelSelector = page.querySelector('#meta-modelSelector');
-                const apiKeySection = page.querySelector('#meta-apiKeySection');
-                const apiKeyInput = page.querySelector('#meta-apiKeyInput');
                 const optimizeCheckbox = page.querySelector('#meta-optimize-checkbox');
                 const outputSection = page.querySelector('#meta-outputSection');
                 const fileListContainer = page.querySelector('#meta-fileList');
@@ -391,10 +432,6 @@
                 });
                 fileInput.addEventListener('change', (e) => {
                     if (e.target.files.length) handleFiles(e.target.files);
-                });
-
-                modelSelector.addEventListener('change', () => {
-                    apiKeySection.classList.toggle('hidden', !modelSelector.value.includes('pro'));
                 });
 
                 function handleFiles(files) {
@@ -427,7 +464,7 @@
 
                 generateBtn.addEventListener('click', async () => {
                     if (selectedFiles.length === 0) return showAlert('Unggah gambar dahulu.');
-                    if (modelSelector.value.includes('pro') && !apiKeyInput.value.trim()) return showAlert('Masukkan API Key untuk model Pro.');
+                    if (!globalApiKey) return showAlert('Harap masukkan API Key Anda di pengaturan (ikon gerigi).');
 
                     setLoadingState(true);
                     await Promise.all(selectedFiles.map((file, index) => processFile(file, index)));
@@ -452,9 +489,7 @@
                                 responseSchema: { type: "OBJECT", properties: { category: { type: "STRING" }, title: { type: "STRING" }, description: { type: "STRING" }, keywords: { type: "ARRAY", items: { type: "STRING" } } }, required: ["category", "title", "description", "keywords"] }
                             }
                         };
-                        const selectedModel = modelSelector.value;
-                        let apiKey = selectedModel.includes('pro') ? apiKeyInput.value.trim() : "";
-                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${globalApiKey}`;
                         const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                         
                         if (!response.ok) {
@@ -647,723 +682,721 @@
                     </main>
                 `;
             
-            const imgGenBtn = page.querySelector('#imgGenBtn');
-            const imgGenCsvBtn = page.querySelector('#imgGenCsvBtn');
-            const csvFileInput = page.querySelector('#csvFileInput');
-            const csvPromptCount = page.querySelector('#csvPromptCount');
-            const imgGenPrompt = page.querySelector('#imgGenPrompt');
-            const imgGenAspectRatio = page.querySelector('#imgGenAspectRatio');
-            const imgGenCount = page.querySelector('#imgGenCount');
-            const imgGenOutput = page.querySelector('#imgGenOutput');
-            const mainImageContainer = page.querySelector('#mainImageContainer');
-            const thumbnailContainer = page.querySelector('#thumbnailContainer');
-            const zoomModal = document.getElementById('zoomModal');
-            const zoomedImage = document.getElementById('zoomedImage');
-            const clearGalleryBtn = page.querySelector('#clearGalleryBtn');
-            const batchDownloadBtn = page.querySelector('#batchDownloadBtn');
-            const batchDownloadText = page.querySelector('#batchDownloadText');
-            const genMetaForImageBtn = page.querySelector('#genMetaForImageBtn');
-            const metadataModal = document.getElementById('metadataModal');
-            const metadataModalContent = document.getElementById('metadataModalContent');
-            const closeMetadataModalBtn = document.getElementById('closeMetadataModalBtn');
-            const prevImageBtn = page.querySelector('#prevImageBtn');
-            const nextImageBtn = page.querySelector('#nextImageBtn');
-            
-            let promptsToProcess = [];
-            let generatedImagesData = [];
-            let activeImageIndex = -1;
-            
-            imgGenPrompt.addEventListener('input', () => {
-                if (promptsToProcess.length > 0) {
-                    promptsToProcess = [];
-                    csvPromptCount.classList.add('hidden');
-                }
-            });
-
-            imgGenBtn.addEventListener('click', () => {
-                let finalPrompts = [];
-                if (promptsToProcess.length > 0) {
-                    finalPrompts = promptsToProcess;
-                } else {
-                    const singlePrompt = imgGenPrompt.value.trim();
-                    if (singlePrompt) {
-                        finalPrompts.push(singlePrompt);
-                    }
-                }
-
-                if (finalPrompts.length === 0) {
-                    return showAlert('Harap masukkan prompt atau unggah file CSV.');
-                }
+                const imgGenBtn = page.querySelector('#imgGenBtn');
+                const imgGenCsvBtn = page.querySelector('#imgGenCsvBtn');
+                const csvFileInput = page.querySelector('#csvFileInput');
+                const csvPromptCount = page.querySelector('#csvPromptCount');
+                const imgGenPrompt = page.querySelector('#imgGenPrompt');
+                const imgGenAspectRatio = page.querySelector('#imgGenAspectRatio');
+                const imgGenCount = page.querySelector('#imgGenCount');
+                const imgGenOutput = page.querySelector('#imgGenOutput');
+                const mainImageContainer = page.querySelector('#mainImageContainer');
+                const thumbnailContainer = page.querySelector('#thumbnailContainer');
+                const zoomModal = document.getElementById('zoomModal');
+                const zoomedImage = document.getElementById('zoomedImage');
+                const clearGalleryBtn = page.querySelector('#clearGalleryBtn');
+                const batchDownloadBtn = page.querySelector('#batchDownloadBtn');
+                const batchDownloadText = page.querySelector('#batchDownloadText');
+                const genMetaForImageBtn = page.querySelector('#genMetaForImageBtn');
+                const metadataModal = document.getElementById('metadataModal');
+                const metadataModalContent = document.getElementById('metadataModalContent');
+                const closeMetadataModalBtn = document.getElementById('closeMetadataModalBtn');
+                const prevImageBtn = page.querySelector('#prevImageBtn');
+                const nextImageBtn = page.querySelector('#nextImageBtn');
                 
-                processPrompts(finalPrompts);
-            });
-
-            imgGenCsvBtn.addEventListener('click', () => csvFileInput.click());
-
-            csvFileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const text = e.target.result;
-                    try {
-                        const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
-                        if (lines.length < 2) throw new Error("File CSV kosong atau hanya berisi header.");
-                        
-                        const header = lines[0].trim().toLowerCase().split(',');
-                        const promptIndex = header.indexOf('prompt');
-
-                        if (promptIndex === -1) {
-                            throw new Error("File CSV harus memiliki kolom dengan header 'prompt'.");
-                        }
-
-                        const prompts = lines.slice(1).map(line => {
-                            const columns = line.split(',');
-                            return columns[promptIndex] ? columns[promptIndex].trim().replace(/"/g, '') : '';
-                        }).filter(Boolean);
-
-                        if (prompts.length === 0) {
-                            csvPromptCount.classList.add('hidden');
-                            throw new Error("Tidak ada prompt yang valid ditemukan di file CSV.");
-                        }
-                        
-                        promptsToProcess = prompts;
-                        imgGenPrompt.value = ''; // Clear textarea
-                        csvPromptCount.textContent = `${promptsToProcess.length} prompt berhasil diunggah dan siap dibuat.`;
-                        csvPromptCount.classList.remove('hidden');
-
-                    } catch (error) {
-                        showAlert(error.message);
+                let promptsToProcess = [];
+                let generatedImagesData = [];
+                let activeImageIndex = -1;
+                
+                imgGenPrompt.addEventListener('input', () => {
+                    if (promptsToProcess.length > 0) {
                         promptsToProcess = [];
                         csvPromptCount.classList.add('hidden');
                     }
-                };
-                reader.readAsText(file);
-                event.target.value = ''; // Reset file input
-            });
-            
-            mainImageContainer.addEventListener('click', () => {
-                const mainImg = mainImageContainer.querySelector('img');
-                if (mainImg) {
-                    zoomedImage.src = mainImg.src;
-                    zoomModal.classList.remove('hidden');
-                }
-            });
+                });
 
-            clearGalleryBtn.addEventListener('click', () => {
-                generatedImagesData = [];
-                displayGallery();
-            });
-
-            genMetaForImageBtn.addEventListener('click', async () => {
-                if (activeImageIndex === -1) return;
-                
-                const imageData = generatedImagesData[activeImageIndex];
-                if (imageData.metadata) {
-                    showMetadataModal(imageData.metadata);
-                    return;
-                }
-
-                genMetaForImageBtn.disabled = true;
-                genMetaForImageBtn.innerHTML = `<div class="spinner w-5 h-5 border-2"></div>`;
-
-                try {
-                    const metadata = await fetchMetadataForImage(imageData.src);
-                    generatedImagesData[activeImageIndex].metadata = metadata;
-                    showMetadataModal(metadata);
-                } catch (error) {
-                    showAlert('Gagal membuat metadata untuk gambar ini.');
-                } finally {
-                    genMetaForImageBtn.disabled = false;
-                    genMetaForImageBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"></path></svg> Buat Metadata`;
-                }
-            });
-
-            closeMetadataModalBtn.addEventListener('click', () => metadataModal.classList.add('hidden'));
-
-            batchDownloadBtn.addEventListener('click', async () => {
-                if (generatedImagesData.length === 0) {
-                    showAlert('Tidak ada gambar di galeri untuk diunduh.');
-                    return;
-                }
-
-                batchDownloadBtn.disabled = true;
-                batchDownloadText.textContent = 'Membuat metadata...';
-
-                try {
-                    for (let i = 0; i < generatedImagesData.length; i++) {
-                        if (!generatedImagesData[i].metadata) {
-                            batchDownloadText.textContent = `Membuat metadata ${i + 1}/${generatedImagesData.length}...`;
-                            generatedImagesData[i].metadata = await fetchMetadataForImage(generatedImagesData[i].src);
+                imgGenBtn.addEventListener('click', () => {
+                    let finalPrompts = [];
+                    if (promptsToProcess.length > 0) {
+                        finalPrompts = promptsToProcess;
+                    } else {
+                        const singlePrompt = imgGenPrompt.value.trim();
+                        if (singlePrompt) {
+                            finalPrompts.push(singlePrompt);
                         }
                     }
 
-                    batchDownloadText.textContent = 'Menyiapkan ZIP...';
-                    const zip = new JSZip();
+                    if (finalPrompts.length === 0) {
+                        return showAlert('Harap masukkan prompt atau unggah file CSV.');
+                    }
                     
-                    generatedImagesData.forEach((imgData, index) => {
-                        const base64Data = imgData.src.split(',')[1];
-                        zip.file(`image_${index + 1}.png`, base64Data, { base64: true });
-                    });
+                    processPrompts(finalPrompts);
+                });
 
-                    const platforms = ['adobestock', 'shutterstock', 'pngtree'];
-                    platforms.forEach(platform => {
-                        const csvContent = buildCsvContent(generatedImagesData, platform);
-                        zip.file(`metadata_${platform}.csv`, csvContent);
-                    });
-                    
-                    const content = await zip.generateAsync({ type: "blob" });
-                    
-                    const link = document.createElement("a");
-                    link.href = URL.createObjectURL(content);
-                    link.download = `gallery_${Date.now()}.zip`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                imgGenCsvBtn.addEventListener('click', () => csvFileInput.click());
 
-                } catch (error) {
-                    showAlert('Gagal membuat file ZIP.');
-                    console.error('ZIP creation error:', error);
-                } finally {
-                    batchDownloadBtn.disabled = false;
-                    batchDownloadText.textContent = 'Unduh Semua (ZIP)';
-                }
-            });
+                csvFileInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (!file) return;
 
-            async function processPrompts(prompts) {
-                const aspectRatio = imgGenAspectRatio.value;
-                const sampleCount = parseInt(imgGenCount.value, 10);
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const text = e.target.result;
+                        try {
+                            const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+                            if (lines.length < 2) throw new Error("File CSV kosong atau hanya berisi header.");
+                            
+                            const header = lines[0].trim().toLowerCase().split(',');
+                            const promptIndex = header.indexOf('prompt');
 
-                imgGenBtn.disabled = true;
-                imgGenCsvBtn.disabled = true;
-                imgGenOutput.classList.remove('hidden');
-                csvPromptCount.classList.add('hidden');
+                            if (promptIndex === -1) {
+                                throw new Error("File CSV harus memiliki kolom dengan header 'prompt'.");
+                            }
+
+                            const prompts = lines.slice(1).map(line => {
+                                const columns = line.split(',');
+                                return columns[promptIndex] ? columns[promptIndex].trim().replace(/"/g, '') : '';
+                            }).filter(Boolean);
+
+                            if (prompts.length === 0) {
+                                csvPromptCount.classList.add('hidden');
+                                throw new Error("Tidak ada prompt yang valid ditemukan di file CSV.");
+                            }
+                            
+                            promptsToProcess = prompts;
+                            imgGenPrompt.value = ''; // Clear textarea
+                            csvPromptCount.textContent = `${promptsToProcess.length} prompt berhasil diunggah dan siap dibuat.`;
+                            csvPromptCount.classList.remove('hidden');
+
+                        } catch (error) {
+                            showAlert(error.message);
+                            promptsToProcess = [];
+                            csvPromptCount.classList.add('hidden');
+                        }
+                    };
+                    reader.readAsText(file);
+                    event.target.value = ''; // Reset file input
+                });
                 
-                if (prompts === promptsToProcess) {
-                    generatedImagesData = [];
-                }
+                mainImageContainer.addEventListener('click', () => {
+                    const mainImg = mainImageContainer.querySelector('img');
+                    if (mainImg) {
+                        zoomedImage.src = mainImg.src;
+                        zoomModal.classList.remove('hidden');
+                    }
+                });
 
-                for (let i = 0; i < prompts.length; i++) {
-                    const prompt = prompts[i];
+                clearGalleryBtn.addEventListener('click', () => {
+                    generatedImagesData = [];
+                    displayGallery();
+                });
+
+                genMetaForImageBtn.addEventListener('click', async () => {
+                    if (activeImageIndex === -1) return;
                     
-                    mainImageContainer.innerHTML = `
-                        <div class="text-center p-4">
-                            <div class="spinner w-16 h-16 rounded-full border-4 border-transparent mx-auto"></div>
-                            <p class="mt-4 text-gray-600 dark:text-gray-300">Memproses prompt ${i + 1} dari ${prompts.length}: "${prompt.substring(0, 50)}..."</p>
-                        </div>`;
-                    thumbnailContainer.innerHTML = '';
+                    const imageData = generatedImagesData[activeImageIndex];
+                    if (imageData.metadata) {
+                        showMetadataModal(imageData.metadata);
+                        return;
+                    }
+
+                    genMetaForImageBtn.disabled = true;
+                    genMetaForImageBtn.innerHTML = `<div class="spinner w-5 h-5 border-2"></div>`;
 
                     try {
-                        const payload = { 
-                            instances: [{ prompt: prompt }], 
-                            parameters: { 
-                                "sampleCount": sampleCount,
-                                "aspectRatio": aspectRatio
-                            } 
-                        };
-                        const apiKey = "";
-                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+                        const metadata = await fetchMetadataForImage(imageData.src);
+                        generatedImagesData[activeImageIndex].metadata = metadata;
+                        showMetadataModal(metadata);
+                    } catch (error) {
+                        showAlert('Gagal membuat metadata untuk gambar ini.');
+                    } finally {
+                        genMetaForImageBtn.disabled = false;
+                        genMetaForImageBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"></path></svg> Buat Metadata`;
+                    }
+                });
 
-                        const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
+                closeMetadataModalBtn.addEventListener('click', () => metadataModal.classList.add('hidden'));
+
+                batchDownloadBtn.addEventListener('click', async () => {
+                    if (generatedImagesData.length === 0) {
+                        showAlert('Tidak ada gambar di galeri untuk diunduh.');
+                        return;
+                    }
+
+                    batchDownloadBtn.disabled = true;
+                    batchDownloadText.textContent = 'Membuat metadata...';
+
+                    try {
+                        for (let i = 0; i < generatedImagesData.length; i++) {
+                            if (!generatedImagesData[i].metadata) {
+                                batchDownloadText.textContent = `Membuat metadata ${i + 1}/${generatedImagesData.length}...`;
+                                generatedImagesData[i].metadata = await fetchMetadataForImage(generatedImagesData[i].src);
+                            }
+                        }
+
+                        batchDownloadText.textContent = 'Menyiapkan ZIP...';
+                        const zip = new JSZip();
+                        
+                        generatedImagesData.forEach((imgData, index) => {
+                            const base64Data = imgData.src.split(',')[1];
+                            zip.file(`image_${index + 1}.png`, base64Data, { base64: true });
                         });
 
+                        const platforms = ['adobestock', 'shutterstock', 'pngtree'];
+                        platforms.forEach(platform => {
+                            const csvContent = buildCsvContent(generatedImagesData, platform);
+                            zip.file(`metadata_${platform}.csv`, csvContent);
+                        });
+                        
+                        const content = await zip.generateAsync({ type: "blob" });
+                        
+                        const link = document.createElement("a");
+                        link.href = URL.createObjectURL(content);
+                        link.download = `gallery_${Date.now()}.zip`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                    } catch (error) {
+                        showAlert('Gagal membuat file ZIP.');
+                        console.error('ZIP creation error:', error);
+                    } finally {
+                        batchDownloadBtn.disabled = false;
+                        batchDownloadText.textContent = 'Unduh Semua (ZIP)';
+                    }
+                });
+
+                async function processPrompts(prompts) {
+                    const aspectRatio = imgGenAspectRatio.value;
+                    const sampleCount = parseInt(imgGenCount.value, 10);
+
+                    imgGenBtn.disabled = true;
+                    imgGenCsvBtn.disabled = true;
+                    imgGenOutput.classList.remove('hidden');
+                    csvPromptCount.classList.add('hidden');
+                    
+                    if (prompts === promptsToProcess) {
+                        generatedImagesData = [];
+                    }
+
+                    for (let i = 0; i < prompts.length; i++) {
+                        const prompt = prompts[i];
+                        
+                        mainImageContainer.innerHTML = `
+                            <div class="text-center p-4">
+                                <div class="spinner w-16 h-16 rounded-full border-4 border-transparent mx-auto"></div>
+                                <p class="mt-4 text-gray-600 dark:text-gray-300">Memproses prompt ${i + 1} dari ${prompts.length}: "${prompt.substring(0, 50)}..."</p>
+                            </div>`;
+                        thumbnailContainer.innerHTML = '';
+
+                        try {
+                            const payload = { 
+                                instances: [{ prompt: prompt }], 
+                                parameters: { 
+                                    "sampleCount": sampleCount,
+                                    "aspectRatio": aspectRatio
+                                } 
+                            };
+                            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${globalApiKey}`;
+
+                            const response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                            }
+
+                            const result = await response.json();
+
+                            if (result.predictions && result.predictions.length > 0) {
+                                result.predictions.forEach(prediction => {
+                                    if (prediction.bytesBase64Encoded) {
+                                        generatedImagesData.push({
+                                            src: `data:image/png;base64,${prediction.bytesBase64Encoded}`,
+                                            prompt: prompt,
+                                            metadata: null
+                                        });
+                                    }
+                                });
+                            } else {
+                                throw new Error('Respons API tidak valid atau tidak berisi gambar.');
+                            }
+                        } catch (error) {
+                            console.error('Image generation error:', error);
+                            showAlert(`Gagal memproses prompt: "${prompt.substring(0,50)}..."`);
+                        }
+                        
+                        displayGallery();
+                    }
+                    
+                    promptsToProcess = [];
+                    imgGenBtn.disabled = false;
+                    imgGenCsvBtn.disabled = false;
+                }
+
+                function displayGallery() {
+                    mainImageContainer.innerHTML = '';
+                    thumbnailContainer.innerHTML = '';
+
+                    if (generatedImagesData.length === 0) {
+                        mainImageContainer.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Galeri kosong. Buat gambar untuk memulai.</p>`;
+                        batchDownloadBtn.disabled = true;
+                        genMetaForImageBtn.disabled = true;
+                        prevImageBtn.classList.add('hidden');
+                        nextImageBtn.classList.add('hidden');
+                        return;
+                    }
+                    
+                    batchDownloadBtn.disabled = false;
+                    genMetaForImageBtn.disabled = false;
+                    
+                    if (generatedImagesData.length > 1) {
+                        prevImageBtn.classList.remove('hidden');
+                        nextImageBtn.classList.remove('hidden');
+                    } else {
+                        prevImageBtn.classList.add('hidden');
+                        nextImageBtn.classList.add('hidden');
+                    }
+
+
+                    generatedImagesData.forEach((imgData, index) => {
+                        const thumbWrapper = document.createElement('div');
+                        thumbWrapper.className = 'relative flex-shrink-0 group';
+
+                        const thumb = document.createElement('img');
+                        thumb.src = imgData.src;
+                        thumb.className = 'thumbnail w-20 h-20 object-cover rounded-md cursor-pointer border-2 border-transparent transition';
+                        thumb.dataset.index = index;
+                        thumb.addEventListener('click', () => updateMainImage(index));
+                        
+                        const overlay = document.createElement('div');
+                        overlay.className = 'absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center gap-2';
+                        
+                        const downloadBtn = document.createElement('a');
+                        downloadBtn.href = imgData.src;
+                        downloadBtn.download = `image_${index + 1}.png`;
+                        downloadBtn.className = 'text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity';
+                        downloadBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>`;
+                        
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity';
+                        deleteBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
+                        deleteBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            generatedImagesData.splice(index, 1);
+                            displayGallery();
+                        });
+
+                        overlay.appendChild(downloadBtn);
+                        overlay.appendChild(deleteBtn);
+                        thumbWrapper.appendChild(thumb);
+                        thumbWrapper.appendChild(overlay);
+                        thumbnailContainer.appendChild(thumbWrapper);
+                    });
+
+                    updateMainImage(generatedImagesData.length > 0 ? 0 : -1);
+                }
+
+                function updateMainImage(index) {
+                    if (index < 0 || index >= generatedImagesData.length) {
+                        mainImageContainer.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Galeri kosong. Buat gambar untuk memulai.</p>`;
+                        activeImageIndex = -1;
+                        genMetaForImageBtn.disabled = true;
+                        return;
+                    }
+                    activeImageIndex = index;
+                    genMetaForImageBtn.disabled = false;
+                    const imgData = generatedImagesData[index];
+                    mainImageContainer.innerHTML = `<img src="${imgData.src}" alt="${imgData.prompt}" class="max-w-full max-h-full object-contain rounded-lg">`;
+
+                    document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
+                        thumb.classList.toggle('active', i === index);
+                    });
+                }
+                
+                prevImageBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (generatedImagesData.length > 1) {
+                        let newIndex = activeImageIndex - 1;
+                        if (newIndex < 0) {
+                            newIndex = generatedImagesData.length - 1;
+                        }
+                        updateMainImage(newIndex);
+                    }
+                });
+
+                nextImageBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (generatedImagesData.length > 1) {
+                        let newIndex = activeImageIndex + 1;
+                        if (newIndex >= generatedImagesData.length) {
+                            newIndex = 0;
+                        }
+                        updateMainImage(newIndex);
+                    }
+                });
+
+
+                async function fetchMetadataForImage(base64Src) {
+                    const base64Data = base64Src.split(',')[1];
+                    const prompt = `You are an expert metadata generator for stock photography platforms. Based on the provided image, generate metadata in English: 1. **category**: Choose one from: People, Business, Food, Nature, Travel, Animals, Technology, Abstract, Lifestyle, Health, Sports, Objects, Backgrounds. 2. **title**: A concise, descriptive title (max 150 chars). 3. **description**: A clear, single-sentence description. 4. **keywords**: 40-50 relevant keywords (specific to general). Ensure output is ONLY a valid JSON object.`;
+                    const payload = {
+                        contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { mimeType: 'image/png', data: base64Data } }] }],
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: { type: "OBJECT", properties: { category: { type: "STRING" }, title: { type: "STRING" }, description: { type: "STRING" }, keywords: { type: "ARRAY", items: { type: "STRING" } } }, required: ["category", "title", "description", "keywords"] }
+                        }
+                    };
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${globalApiKey}`;
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                    }
+                    const result = await response.json();
+                    
+                    if (!result.candidates || result.candidates.length === 0) {
+                        const blockReason = result.promptFeedback?.blockReason || "TIDAK DIKETAHUI";
+                        throw new Error(`Respons API diblokir (Alasan: ${blockReason}). Coba gambar lain.`);
+                    }
+                    const textContent = result.candidates[0]?.content?.parts?.[0]?.text;
+                     if (textContent && textContent.trim().startsWith('{')) {
+                        return JSON.parse(textContent);
+                    } else {
+                        const finishReason = result.candidates[0]?.finishReason || "TIDAK DIKETAHUI";
+                        throw new Error(`Respons API kosong atau tidak valid (Alasan: ${finishReason}).`);
+                    }
+                }
+
+                function showMetadataModal(metadata) {
+                    metadataModalContent.innerHTML = `
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Judul</label>
+                                <div class="relative mt-1">
+                                    <input type="text" id="modalTitle" class="w-full p-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500" value="${metadata.title || ''}" readonly>
+                                    <button onclick="copyToClipboard('modalTitle', 'tooltipModalTitle')" class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 hover:text-blue-600 copy-btn-tooltip">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        <span id="tooltipModalTitle" class="tooltip-text">Salin Judul</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Deskripsi</label>
+                                <div class="relative mt-1">
+                                    <textarea id="modalDescription" rows="2" class="w-full p-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500" readonly>${metadata.description || ''}</textarea>
+                                    <button onclick="copyToClipboard('modalDescription', 'tooltipModalDesc')" class="absolute top-2 right-0 flex items-center px-2 text-gray-500 hover:text-blue-600 copy-btn-tooltip">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        <span id="tooltipModalDesc" class="tooltip-text">Salin Deskripsi</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Kata Kunci</label>
+                                <div class="relative mt-1">
+                                    <textarea id="modalKeywords" rows="4" class="w-full p-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500" readonly>${(metadata.keywords || []).join(', ')}</textarea>
+                                    <button onclick="copyToClipboard('modalKeywords', 'tooltipModalKeys')" class="absolute top-2 right-0 flex items-center px-2 text-gray-500 hover:text-blue-600 copy-btn-tooltip">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        <span id="tooltipModalKeys" class="tooltip-text">Salin Kata Kunci</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    metadataModal.classList.remove('hidden');
+                }
+
+                function buildCsvContent(data, platform) {
+                    let headers, rows;
+                    const currentData = data.map((d, i) => ({
+                        filename: `image_${i + 1}.png`,
+                        category: d.metadata?.category || '',
+                        title: d.metadata?.title || '',
+                        description: d.metadata?.description || '',
+                        keywords: (d.metadata?.keywords || []).join(', ')
+                    }));
+
+                    if (platform === 'adobestock') {
+                        headers = ['Filename', 'Title', 'Keywords', 'Category'];
+                        rows = currentData.map(d => [d.filename, d.title, d.keywords, d.category]);
+                    } else if (platform === 'shutterstock') {
+                        headers = ['Filename', 'Description', 'Keywords', 'Category 1'];
+                        rows = currentData.map(d => [d.filename, d.description, d.keywords, d.category]);
+                    } else { // pngtree, freepik, dreamstime, vecteezy
+                        headers = ['Filename', 'Title', 'Description', 'Keywords'];
+                        rows = currentData.map(d => [d.filename, d.title, d.description, d.keywords]);
+                    }
+                    return headers.join(",") + "\n" + rows.map(e => `"${e.join('","')}"`).join("\n");
+                }
+
+            })();
+            
+            // --- Prompt Generator ---
+            (function promptGenerator() {
+                const page = document.getElementById('page-prompt-generator');
+                page.innerHTML = `
+                    <header class="text-center mb-8 mt-4">
+                        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Prompt Generator</h1>
+                        <p class="mt-2 text-md sm:text-lg text-gray-600 dark:text-gray-400">Buat variasi prompt kreatif dari beberapa kata kunci inti.</p>
+                    </header>
+                    <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-lg">
+                        <div class="space-y-6">
+                            <div>
+                                <label for="promptGenKeywords" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">1. Masukkan Kata Kunci Inti</label>
+                                <input type="text" id="promptGenKeywords" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg" placeholder="Contoh: naga, kastil, bulan purnama, fantasi">
+                            </div>
+                            <div>
+                                <label for="promptGenCount" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">2. Jumlah Variasi</label>
+                                <select id="promptGenCount" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg">
+                                    <option value="5" selected>5 Variasi</option>
+                                    <option value="10">10 Variasi</option>
+                                    <option value="25">25 Variasi</option>
+                                    <option value="50">50 Variasi</option>
+                                </select>
+                            </div>
+                            <button id="promptGenBtn" class="w-full bg-teal-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-teal-700 flex items-center justify-center space-x-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                                <span>Buat Variasi Prompt</span>
+                            </button>
+                        </div>
+                        <div id="promptGenOutput" class="mt-10 border-t pt-6 hidden dark:border-gray-700">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Hasil Prompt</h2>
+                                <div class="flex gap-4">
+                                    <button id="exportPromptsBtn" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold flex items-center gap-1">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                        Ekspor CSV
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="promptGenResultList" class="space-y-2 max-h-96 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border dark:border-gray-600">
+                                <!-- Generated prompts will be listed here -->
+                            </div>
+                        </div>
+                    </main>
+                `;
+
+                const promptGenBtn = page.querySelector('#promptGenBtn');
+                const promptGenKeywords = page.querySelector('#promptGenKeywords');
+                const promptGenCount = page.querySelector('#promptGenCount');
+                const promptGenOutput = page.querySelector('#promptGenOutput');
+                const promptGenResultList = page.querySelector('#promptGenResultList');
+                const exportPromptsBtn = page.querySelector('#exportPromptsBtn');
+                let lastGeneratedPrompts = [];
+
+                promptGenBtn.addEventListener('click', async () => {
+                    const keywords = promptGenKeywords.value.trim();
+                    const count = promptGenCount.value;
+                    if (!keywords) return showAlert('Harap masukkan beberapa kata kunci inti.');
+                    if (!globalApiKey) return showAlert('Harap masukkan API Key Anda di pengaturan (ikon gerigi).');
+
+                    promptGenBtn.disabled = true;
+                    promptGenBtn.querySelector('span').textContent = 'Membuat...';
+                    promptGenResultList.innerHTML = `<div class="flex justify-center p-4"><div class="spinner w-8 h-8"></div></div>`;
+                    promptGenOutput.classList.remove('hidden');
+
+                    try {
+                        const metaPrompt = `Based on the core keywords "${keywords}", generate ${count} creative and detailed text-to-image prompts suitable for stock photography. Each prompt should be a unique variation, exploring different styles (like photorealistic, watercolor, 3D render), compositions (like close-up, wide-angle), and moods. Return the result as a valid JSON array of strings.`;
+                        const payload = {
+                            contents: [{ role: "user", parts: [{ text: metaPrompt }] }],
+                            generationConfig: { responseMimeType: "application/json" }
+                        };
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${globalApiKey}`;
+                        
+                        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                         if (!response.ok) {
                             const errorData = await response.json();
                             throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
                         }
-
                         const result = await response.json();
-
-                        if (result.predictions && result.predictions.length > 0) {
-                            result.predictions.forEach(prediction => {
-                                if (prediction.bytesBase64Encoded) {
-                                    generatedImagesData.push({
-                                        src: `data:image/png;base64,${prediction.bytesBase64Encoded}`,
-                                        prompt: prompt,
-                                        metadata: null
-                                    });
-                                }
+                        
+                        if (!result.candidates || result.candidates.length === 0) {
+                            const blockReason = result.promptFeedback?.blockReason || "TIDAK DIKETAHUI";
+                            throw new Error(`Respons API diblokir (Alasan: ${blockReason}).`);
+                        }
+                        
+                        const textContent = result.candidates[0]?.content?.parts?.[0]?.text;
+                        if (textContent && textContent.trim().startsWith('[')) {
+                            const generatedPrompts = JSON.parse(textContent);
+                            lastGeneratedPrompts = generatedPrompts;
+                            
+                            promptGenResultList.innerHTML = '';
+                            generatedPrompts.forEach(p => {
+                                const li = document.createElement('li');
+                                li.className = 'p-2 bg-white dark:bg-gray-600 rounded';
+                                li.textContent = p;
+                                promptGenResultList.appendChild(li);
                             });
                         } else {
-                            throw new Error('Respons API tidak valid atau tidak berisi gambar.');
+                            const finishReason = result.candidates[0]?.finishReason || "TIDAK DIKETAHUI";
+                            throw new Error(`Respons API kosong atau tidak valid (Alasan: ${finishReason}).`);
                         }
+
                     } catch (error) {
-                        console.error('Image generation error:', error);
-                        showAlert(`Gagal memproses prompt: "${prompt.substring(0,50)}..."`);
+                        showAlert('Gagal membuat variasi prompt.');
+                        console.error('Prompt generation error:', error);
+                        promptGenResultList.innerHTML = `<p class="text-red-500">Terjadi kesalahan.</p>`;
+                    } finally {
+                        promptGenBtn.disabled = false;
+                        promptGenBtn.querySelector('span').textContent = 'Buat Variasi Prompt';
                     }
-                    
-                    displayGallery();
-                }
-                
-                promptsToProcess = [];
-                imgGenBtn.disabled = false;
-                imgGenCsvBtn.disabled = false;
-            }
-
-            function displayGallery() {
-                mainImageContainer.innerHTML = '';
-                thumbnailContainer.innerHTML = '';
-
-                if (generatedImagesData.length === 0) {
-                    mainImageContainer.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Galeri kosong. Buat gambar untuk memulai.</p>`;
-                    batchDownloadBtn.disabled = true;
-                    genMetaForImageBtn.disabled = true;
-                    prevImageBtn.classList.add('hidden');
-                    nextImageBtn.classList.add('hidden');
-                    return;
-                }
-                
-                batchDownloadBtn.disabled = false;
-                genMetaForImageBtn.disabled = false;
-                
-                if (generatedImagesData.length > 1) {
-                    prevImageBtn.classList.remove('hidden');
-                    nextImageBtn.classList.remove('hidden');
-                } else {
-                    prevImageBtn.classList.add('hidden');
-                    nextImageBtn.classList.add('hidden');
-                }
-
-
-                generatedImagesData.forEach((imgData, index) => {
-                    const thumbWrapper = document.createElement('div');
-                    thumbWrapper.className = 'relative flex-shrink-0 group';
-
-                    const thumb = document.createElement('img');
-                    thumb.src = imgData.src;
-                    thumb.className = 'thumbnail w-20 h-20 object-cover rounded-md cursor-pointer border-2 border-transparent transition';
-                    thumb.dataset.index = index;
-                    thumb.addEventListener('click', () => updateMainImage(index));
-                    
-                    const overlay = document.createElement('div');
-                    overlay.className = 'absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center gap-2';
-                    
-                    const downloadBtn = document.createElement('a');
-                    downloadBtn.href = imgData.src;
-                    downloadBtn.download = `image_${index + 1}.png`;
-                    downloadBtn.className = 'text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity';
-                    downloadBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>`;
-                    
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.className = 'text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity';
-                    deleteBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
-                    deleteBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        generatedImagesData.splice(index, 1);
-                        displayGallery();
-                    });
-
-                    overlay.appendChild(downloadBtn);
-                    overlay.appendChild(deleteBtn);
-                    thumbWrapper.appendChild(thumb);
-                    thumbWrapper.appendChild(overlay);
-                    thumbnailContainer.appendChild(thumbWrapper);
                 });
 
-                updateMainImage(generatedImagesData.length > 0 ? 0 : -1);
-            }
-
-            function updateMainImage(index) {
-                if (index < 0 || index >= generatedImagesData.length) {
-                    mainImageContainer.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Galeri kosong. Buat gambar untuk memulai.</p>`;
-                    activeImageIndex = -1;
-                    genMetaForImageBtn.disabled = true;
-                    return;
-                }
-                activeImageIndex = index;
-                genMetaForImageBtn.disabled = false;
-                const imgData = generatedImagesData[index];
-                mainImageContainer.innerHTML = `<img src="${imgData.src}" alt="${imgData.prompt}" class="max-w-full max-h-full object-contain rounded-lg">`;
-
-                document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
-                    thumb.classList.toggle('active', i === index);
+                exportPromptsBtn.addEventListener('click', () => {
+                    if (lastGeneratedPrompts.length === 0) return showAlert('Tidak ada prompt untuk diekspor.');
+                    const csvContent = "data:text/csv;charset=utf-8," + "prompt\n" + lastGeneratedPrompts.map(p => `"${p.replace(/"/g, '""')}"`).join("\n");
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodeURI(csvContent));
+                    link.setAttribute("download", `generated_prompts_${Date.now()}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                 });
-            }
-            
-            prevImageBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (generatedImagesData.length > 1) {
-                    let newIndex = activeImageIndex - 1;
-                    if (newIndex < 0) {
-                        newIndex = generatedImagesData.length - 1;
-                    }
-                    updateMainImage(newIndex);
-                }
-            });
+            })();
 
-            nextImageBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (generatedImagesData.length > 1) {
-                    let newIndex = activeImageIndex + 1;
-                    if (newIndex >= generatedImagesData.length) {
-                        newIndex = 0;
-                    }
-                    updateMainImage(newIndex);
-                }
-            });
-
-
-            async function fetchMetadataForImage(base64Src) {
-                const base64Data = base64Src.split(',')[1];
-                const prompt = `You are an expert metadata generator for stock photography platforms. Based on the provided image, generate metadata in English: 1. **category**: Choose one from: People, Business, Food, Nature, Travel, Animals, Technology, Abstract, Lifestyle, Health, Sports, Objects, Backgrounds. 2. **title**: A concise, descriptive title (max 150 chars). 3. **description**: A clear, single-sentence description. 4. **keywords**: 40-50 relevant keywords (specific to general). Ensure output is ONLY a valid JSON object.`;
-                const payload = {
-                    contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { mimeType: 'image/png', data: base64Data } }] }],
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: { type: "OBJECT", properties: { category: { type: "STRING" }, title: { type: "STRING" }, description: { type: "STRING" }, keywords: { type: "ARRAY", items: { type: "STRING" } } }, required: ["category", "title", "description", "keywords"] }
-                    }
-                };
-                const apiKey = ""; // Use default environment key
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
-                }
-                const result = await response.json();
-                
-                if (!result.candidates || result.candidates.length === 0) {
-                    const blockReason = result.promptFeedback?.blockReason || "TIDAK DIKETAHUI";
-                    throw new Error(`Respons API diblokir (Alasan: ${blockReason}). Coba gambar lain.`);
-                }
-                const textContent = result.candidates[0]?.content?.parts?.[0]?.text;
-                 if (textContent && textContent.trim().startsWith('{')) {
-                    return JSON.parse(textContent);
-                } else {
-                    const finishReason = result.candidates[0]?.finishReason || "TIDAK DIKETAHUI";
-                    throw new Error(`Respons API kosong atau tidak valid (Alasan: ${finishReason}).`);
-                }
-            }
-
-            function showMetadataModal(metadata) {
-                metadataModalContent.innerHTML = `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Judul</label>
-                            <div class="relative mt-1">
-                                <input type="text" id="modalTitle" class="w-full p-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500" value="${metadata.title || ''}" readonly>
-                                <button onclick="copyToClipboard('modalTitle', 'tooltipModalTitle')" class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 hover:text-blue-600 copy-btn-tooltip">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                    <span id="tooltipModalTitle" class="tooltip-text">Salin Judul</span>
-                                </button>
+            // --- Trend Analysis ---
+            (function trendAnalysis() {
+                const page = document.getElementById('page-trend-analysis');
+                page.innerHTML = `
+                    <header class="text-center mb-8 mt-4">
+                        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Analisis Tren Pasar</h1>
+                        <p class="mt-2 text-md sm:text-lg text-gray-600 dark:text-gray-400">Dapatkan wawasan tentang kata kunci, konsep, dan gaya yang sedang populer.</p>
+                    </header>
+                    <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-lg">
+                        <div class="space-y-6">
+                            <div>
+                                <label for="trendTopicInput" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Masukkan Topik atau Kata Kunci</label>
+                                <input type="text" id="trendTopicInput" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg" placeholder="Contoh: liburan musim panas, teknologi AI, makanan sehat">
                             </div>
+                            <button id="trendAnalysisBtn" class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-green-700 flex items-center justify-center space-x-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                                <span>Analisis Tren Pasar</span>
+                            </button>
                         </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Deskripsi</label>
-                            <div class="relative mt-1">
-                                <textarea id="modalDescription" rows="2" class="w-full p-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500" readonly>${metadata.description || ''}</textarea>
-                                <button onclick="copyToClipboard('modalDescription', 'tooltipModalDesc')" class="absolute top-2 right-0 flex items-center px-2 text-gray-500 hover:text-blue-600 copy-btn-tooltip">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                    <span id="tooltipModalDesc" class="tooltip-text">Salin Deskripsi</span>
-                                </button>
-                            </div>
+                        <div id="trendAnalysisOutput" class="mt-10 border-t pt-6 hidden dark:border-gray-700">
+                            <!-- Trend analysis results will be injected here -->
                         </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Kata Kunci</label>
-                            <div class="relative mt-1">
-                                <textarea id="modalKeywords" rows="4" class="w-full p-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500" readonly>${(metadata.keywords || []).join(', ')}</textarea>
-                                <button onclick="copyToClipboard('modalKeywords', 'tooltipModalKeys')" class="absolute top-2 right-0 flex items-center px-2 text-gray-500 hover:text-blue-600 copy-btn-tooltip">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                    <span id="tooltipModalKeys" class="tooltip-text">Salin Kata Kunci</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    </main>
                 `;
-                metadataModal.classList.remove('hidden');
-            }
+                const trendAnalysisBtn = page.querySelector('#trendAnalysisBtn');
+                const trendTopicInput = page.querySelector('#trendTopicInput');
+                const trendAnalysisOutput = page.querySelector('#trendAnalysisOutput');
 
-            function buildCsvContent(data, platform) {
-                let headers, rows;
-                const currentData = data.map((d, i) => ({
-                    filename: `image_${i + 1}.png`,
-                    category: d.metadata?.category || '',
-                    title: d.metadata?.title || '',
-                    description: d.metadata?.description || '',
-                    keywords: (d.metadata?.keywords || []).join(', ')
-                }));
-
-                if (platform === 'adobestock') {
-                    headers = ['Filename', 'Title', 'Keywords', 'Category'];
-                    rows = currentData.map(d => [d.filename, d.title, d.keywords, d.category]);
-                } else if (platform === 'shutterstock') {
-                    headers = ['Filename', 'Description', 'Keywords', 'Category 1'];
-                    rows = currentData.map(d => [d.filename, d.description, d.keywords, d.category]);
-                } else { // pngtree, freepik, dreamstime, vecteezy
-                    headers = ['Filename', 'Title', 'Description', 'Keywords'];
-                    rows = currentData.map(d => [d.filename, d.title, d.description, d.keywords]);
-                }
-                return headers.join(",") + "\n" + rows.map(e => `"${e.join('","')}"`).join("\n");
-            }
-
-        })();
-        
-        // --- Prompt Generator ---
-        (function promptGenerator() {
-            const page = document.getElementById('page-prompt-generator');
-            page.innerHTML = `
-                <header class="text-center mb-8 mt-4">
-                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Prompt Generator</h1>
-                    <p class="mt-2 text-md sm:text-lg text-gray-600 dark:text-gray-400">Buat variasi prompt kreatif dari beberapa kata kunci inti.</p>
-                </header>
-                <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-lg">
-                    <div class="space-y-6">
-                        <div>
-                            <label for="promptGenKeywords" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">1. Masukkan Kata Kunci Inti</label>
-                            <input type="text" id="promptGenKeywords" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg" placeholder="Contoh: naga, kastil, bulan purnama, fantasi">
-                        </div>
-                        <div>
-                            <label for="promptGenCount" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">2. Jumlah Variasi</label>
-                            <select id="promptGenCount" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg">
-                                <option value="5" selected>5 Variasi</option>
-                                <option value="10">10 Variasi</option>
-                                <option value="25">25 Variasi</option>
-                                <option value="50">50 Variasi</option>
-                            </select>
-                        </div>
-                        <button id="promptGenBtn" class="w-full bg-teal-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-teal-700 flex items-center justify-center space-x-2">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                            <span>Buat Variasi Prompt</span>
-                        </button>
-                    </div>
-                    <div id="promptGenOutput" class="mt-10 border-t pt-6 hidden dark:border-gray-700">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Hasil Prompt</h2>
-                            <div class="flex gap-4">
-                                <button id="exportPromptsBtn" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold flex items-center gap-1">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                    Ekspor CSV
-                                </button>
-                            </div>
-                        </div>
-                        <div id="promptGenResultList" class="space-y-2 max-h-96 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border dark:border-gray-600">
-                            <!-- Generated prompts will be listed here -->
-                        </div>
-                    </div>
-                </main>
-            `;
-
-            const promptGenBtn = page.querySelector('#promptGenBtn');
-            const promptGenKeywords = page.querySelector('#promptGenKeywords');
-            const promptGenCount = page.querySelector('#promptGenCount');
-            const promptGenOutput = page.querySelector('#promptGenOutput');
-            const promptGenResultList = page.querySelector('#promptGenResultList');
-            const exportPromptsBtn = page.querySelector('#exportPromptsBtn');
-            let lastGeneratedPrompts = [];
-
-            promptGenBtn.addEventListener('click', async () => {
-                const keywords = promptGenKeywords.value.trim();
-                const count = promptGenCount.value;
-                if (!keywords) return showAlert('Harap masukkan beberapa kata kunci inti.');
-
-                promptGenBtn.disabled = true;
-                promptGenBtn.querySelector('span').textContent = 'Membuat...';
-                promptGenResultList.innerHTML = `<div class="flex justify-center p-4"><div class="spinner w-8 h-8"></div></div>`;
-                promptGenOutput.classList.remove('hidden');
-
-                try {
-                    const metaPrompt = `Based on the core keywords "${keywords}", generate ${count} creative and detailed text-to-image prompts suitable for stock photography. Each prompt should be a unique variation, exploring different styles (like photorealistic, watercolor, 3D render), compositions (like close-up, wide-angle), and moods. Return the result as a valid JSON array of strings.`;
-                    const payload = {
-                        contents: [{ role: "user", parts: [{ text: metaPrompt }] }],
-                        generationConfig: { responseMimeType: "application/json" }
-                    };
-                    const apiKey = "";
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                    
-                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                trendAnalysisBtn.addEventListener('click', async () => {
+                    const topic = trendTopicInput.value.trim();
+                    if (!topic) {
+                        showAlert('Harap masukkan topik untuk dianalisis.');
+                        return;
                     }
-                    const result = await response.json();
-                    
-                    if (!result.candidates || result.candidates.length === 0) {
-                        const blockReason = result.promptFeedback?.blockReason || "TIDAK DIKETAHUI";
-                        throw new Error(`Respons API diblokir (Alasan: ${blockReason}).`);
-                    }
-                    
-                    const textContent = result.candidates[0]?.content?.parts?.[0]?.text;
-                    if (textContent && textContent.trim().startsWith('[')) {
-                        const generatedPrompts = JSON.parse(textContent);
-                        lastGeneratedPrompts = generatedPrompts;
+                    if (!globalApiKey) return showAlert('Harap masukkan API Key Anda di pengaturan (ikon gerigi).');
+
+                    trendAnalysisBtn.disabled = true;
+                    trendAnalysisBtn.querySelector('span').textContent = 'Menganalisis...';
+                    trendAnalysisOutput.innerHTML = `<div class="flex justify-center p-8"><div class="spinner w-12 h-12"></div></div>`;
+                    trendAnalysisOutput.classList.remove('hidden');
+
+                    try {
+                        const prompt = `You are a market research analyst for stock photography platforms like Adobe Stock and Shutterstock. Based on the topic "${topic}", provide a trend analysis. Give me: 1. A list of 10-15 popular and niche keywords. 2. A list of 3-4 trending visual concepts with brief explanations. 3. A list of 3 popular color palettes with descriptions. 4. 2-3 actionable tips for contributors. Return the result ONLY as a valid JSON object with the keys: 'keywords' (array of strings), 'concepts' (array of objects with 'name' and 'description' keys), 'palettes' (array of objects with 'name' and 'description' keys), 'tips' (array of strings).`;
                         
-                        promptGenResultList.innerHTML = '';
-                        generatedPrompts.forEach(p => {
-                            const li = document.createElement('li');
-                            li.className = 'p-2 bg-white dark:bg-gray-600 rounded';
-                            li.textContent = p;
-                            promptGenResultList.appendChild(li);
-                        });
-                    } else {
-                        const finishReason = result.candidates[0]?.finishReason || "TIDAK DIKETAHUI";
-                        throw new Error(`Respons API kosong atau tidak valid (Alasan: ${finishReason}).`);
-                    }
-
-                } catch (error) {
-                    showAlert('Gagal membuat variasi prompt.');
-                    console.error('Prompt generation error:', error);
-                    promptGenResultList.innerHTML = `<p class="text-red-500">Terjadi kesalahan.</p>`;
-                } finally {
-                    promptGenBtn.disabled = false;
-                    promptGenBtn.querySelector('span').textContent = 'Buat Variasi Prompt';
-                }
-            });
-
-            exportPromptsBtn.addEventListener('click', () => {
-                if (lastGeneratedPrompts.length === 0) return showAlert('Tidak ada prompt untuk diekspor.');
-                const csvContent = "data:text/csv;charset=utf-8," + "prompt\n" + lastGeneratedPrompts.map(p => `"${p.replace(/"/g, '""')}"`).join("\n");
-                const link = document.createElement("a");
-                link.setAttribute("href", encodeURI(csvContent));
-                link.setAttribute("download", `generated_prompts_${Date.now()}.csv`);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
-        })();
-
-        // --- Trend Analysis ---
-        (function trendAnalysis() {
-            const page = document.getElementById('page-trend-analysis');
-            page.innerHTML = `
-                <header class="text-center mb-8 mt-4">
-                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Analisis Tren Pasar</h1>
-                    <p class="mt-2 text-md sm:text-lg text-gray-600 dark:text-gray-400">Dapatkan wawasan tentang kata kunci, konsep, dan gaya yang sedang populer.</p>
-                </header>
-                <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-lg">
-                    <div class="space-y-6">
-                        <div>
-                            <label for="trendTopicInput" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Masukkan Topik atau Kata Kunci</label>
-                            <input type="text" id="trendTopicInput" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg" placeholder="Contoh: liburan musim panas, teknologi AI, makanan sehat">
-                        </div>
-                        <button id="trendAnalysisBtn" class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-green-700 flex items-center justify-center space-x-2">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                            <span>Analisis Tren Pasar</span>
-                        </button>
-                    </div>
-                    <div id="trendAnalysisOutput" class="mt-10 border-t pt-6 hidden dark:border-gray-700">
-                        <!-- Trend analysis results will be injected here -->
-                    </div>
-                </main>
-            `;
-            const trendAnalysisBtn = page.querySelector('#trendAnalysisBtn');
-            const trendTopicInput = page.querySelector('#trendTopicInput');
-            const trendAnalysisOutput = page.querySelector('#trendAnalysisOutput');
-
-            trendAnalysisBtn.addEventListener('click', async () => {
-                const topic = trendTopicInput.value.trim();
-                if (!topic) {
-                    showAlert('Harap masukkan topik untuk dianalisis.');
-                    return;
-                }
-
-                trendAnalysisBtn.disabled = true;
-                trendAnalysisBtn.querySelector('span').textContent = 'Menganalisis...';
-                trendAnalysisOutput.innerHTML = `<div class="flex justify-center p-8"><div class="spinner w-12 h-12"></div></div>`;
-                trendAnalysisOutput.classList.remove('hidden');
-
-                try {
-                    const prompt = `You are a market research analyst for stock photography platforms like Adobe Stock and Shutterstock. Based on the topic "${topic}", provide a trend analysis. Give me: 1. A list of 10-15 popular and niche keywords. 2. A list of 3-4 trending visual concepts with brief explanations. 3. A list of 3 popular color palettes with descriptions. 4. 2-3 actionable tips for contributors. Return the result ONLY as a valid JSON object with the keys: 'keywords' (array of strings), 'concepts' (array of objects with 'name' and 'description' keys), 'palettes' (array of objects with 'name' and 'description' keys), 'tips' (array of strings).`;
-                    
-                    const payload = {
-                        contents: [{ role: "user", parts: [{ text: prompt }] }],
-                        generationConfig: {
-                            responseMimeType: "application/json",
-                            responseSchema: {
-                                type: "OBJECT",
-                                properties: {
-                                    keywords: { type: "ARRAY", items: { type: "STRING" } },
-                                    concepts: { type: "ARRAY", items: { type: "OBJECT", properties: { name: { type: "STRING" }, description: { type: "STRING" } } } },
-                                    palettes: { type: "ARRAY", items: { type: "OBJECT", properties: { name: { type: "STRING" }, description: { type: "STRING" } } } },
-                                    tips: { type: "ARRAY", items: { type: "STRING" } }
-                                },
-                                required: ["keywords", "concepts", "palettes", "tips"]
+                        const payload = {
+                            contents: [{ role: "user", parts: [{ text: prompt }] }],
+                            generationConfig: {
+                                responseMimeType: "application/json",
+                                responseSchema: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        keywords: { type: "ARRAY", items: { type: "STRING" } },
+                                        concepts: { type: "ARRAY", items: { type: "OBJECT", properties: { name: { type: "STRING" }, description: { type: "STRING" } } } },
+                                        palettes: { type: "ARRAY", items: { type: "OBJECT", properties: { name: { type: "STRING" }, description: { type: "STRING" } } } },
+                                        tips: { type: "ARRAY", items: { type: "STRING" } }
+                                    },
+                                    required: ["keywords", "concepts", "palettes", "tips"]
+                                }
                             }
+                        };
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${globalApiKey}`;
+
+                        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
                         }
-                    };
-                    const apiKey = "";
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                        
+                        const result = await response.json();
+                        
+                        if (!result.candidates || result.candidates.length === 0) {
+                            const blockReason = result.promptFeedback?.blockReason || "TIDAK DIKETAHUI";
+                            throw new Error(`Respons API diblokir (Alasan: ${blockReason}).`);
+                        }
+                        
+                        const textContent = result.candidates[0]?.content?.parts?.[0]?.text;
+                        if (textContent && textContent.trim().startsWith('{')) {
+                            const analysis = JSON.parse(textContent);
+                            displayTrendAnalysis(analysis, topic);
+                        } else {
+                            const finishReason = result.candidates[0]?.finishReason || "TIDAK DIKETAHUI";
+                            throw new Error(`Respons API kosong atau tidak valid (Alasan: ${finishReason}).`);
+                        }
 
-                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                    } catch (error) {
+                        showAlert('Gagal melakukan analisis tren.');
+                        console.error('Trend analysis error:', error);
+                        trendAnalysisOutput.innerHTML = `<p class="text-red-500 text-center">Terjadi kesalahan saat menganalisis. Silakan coba lagi.</p>`;
+                    } finally {
+                        trendAnalysisBtn.disabled = false;
+                        trendAnalysisBtn.querySelector('span').textContent = 'Analisis Tren Pasar';
                     }
-                    
-                    const result = await response.json();
-                    
-                    if (!result.candidates || result.candidates.length === 0) {
-                        const blockReason = result.promptFeedback?.blockReason || "TIDAK DIKETAHUI";
-                        throw new Error(`Respons API diblokir (Alasan: ${blockReason}).`);
-                    }
-                    
-                    const textContent = result.candidates[0]?.content?.parts?.[0]?.text;
-                    if (textContent && textContent.trim().startsWith('{')) {
-                        const analysis = JSON.parse(textContent);
-                        displayTrendAnalysis(analysis, topic);
-                    } else {
-                        const finishReason = result.candidates[0]?.finishReason || "TIDAK DIKETAHUI";
-                        throw new Error(`Respons API kosong atau tidak valid (Alasan: ${finishReason}).`);
-                    }
+                });
 
-                } catch (error) {
-                    showAlert('Gagal melakukan analisis tren.');
-                    console.error('Trend analysis error:', error);
-                    trendAnalysisOutput.innerHTML = `<p class="text-red-500 text-center">Terjadi kesalahan saat menganalisis. Silakan coba lagi.</p>`;
-                } finally {
-                    trendAnalysisBtn.disabled = false;
-                    trendAnalysisBtn.querySelector('span').textContent = 'Analisis Tren Pasar';
+                function displayTrendAnalysis(data, topic) {
+                    let html = `<h3 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-6">Hasil Analisis Tren untuk: <span class="text-green-600 dark:text-green-400">${topic}</span></h3>`;
+                    html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-6">`;
+
+                    // Keywords Card
+                    html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">📈 Kata Kunci Populer</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    ${data.keywords.map(kw => `<span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">${kw}</span>`).join('')}
+                                </div>
+                             </div>`;
+                    
+                    // Tips Card
+                    html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg row-span-2">
+                                <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">⭐ Saran Tambahan</h4>
+                                <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
+                                    ${data.tips.map(tip => `<li>${tip}</li>`).join('')}
+                                </ul>
+                             </div>`;
+
+                    // Concepts Card
+                    html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">💡 Konsep Visual Tren</h4>
+                                <div class="space-y-3">
+                                    ${data.concepts.map(c => `<div><p class="font-semibold">${c.name}</p><p class="text-sm text-gray-600 dark:text-gray-400">${c.description}</p></div>`).join('')}
+                                </div>
+                             </div>`;
+                    
+                    // Palettes Card
+                    html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">🎨 Palet Warna Populer</h4>
+                                <div class="space-y-3">
+                                    ${data.palettes.map(p => `<div><p class="font-semibold">${p.name}</p><p class="text-sm text-gray-600 dark:text-gray-400">${p.description}</p></div>`).join('')}
+                                </div>
+                             </div>`;
+
+                    html += `</div>`;
+                    trendAnalysisOutput.innerHTML = html;
                 }
-            });
-
-            function displayTrendAnalysis(data, topic) {
-                let html = `<h3 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-6">Hasil Analisis Tren untuk: <span class="text-green-600 dark:text-green-400">${topic}</span></h3>`;
-                html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-6">`;
-
-                // Keywords Card
-                html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                            <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">📈 Kata Kunci Populer</h4>
-                            <div class="flex flex-wrap gap-2">
-                                ${data.keywords.map(kw => `<span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">${kw}</span>`).join('')}
-                            </div>
-                         </div>`;
-                
-                // Tips Card
-                html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg row-span-2">
-                            <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">⭐ Saran Tambahan</h4>
-                            <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                                ${data.tips.map(tip => `<li>${tip}</li>`).join('')}
-                            </ul>
-                         </div>`;
-
-                // Concepts Card
-                html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                            <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">💡 Konsep Visual Tren</h4>
-                            <div class="space-y-3">
-                                ${data.concepts.map(c => `<div><p class="font-semibold">${c.name}</p><p class="text-sm text-gray-600 dark:text-gray-400">${c.description}</p></div>`).join('')}
-                            </div>
-                         </div>`;
-                
-                // Palettes Card
-                html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                            <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">🎨 Palet Warna Populer</h4>
-                            <div class="space-y-3">
-                                ${data.palettes.map(p => `<div><p class="font-semibold">${p.name}</p><p class="text-sm text-gray-600 dark:text-gray-400">${p.description}</p></div>`).join('')}
-                            </div>
-                         </div>`;
-
-                html += `</div>`;
-                trendAnalysisOutput.innerHTML = html;
-            }
-        })();
+            })();
 
 
-        // Initialize the first page
-        showPage('page-metadata-generator');
-    })();
+            // Initialize the first page
+            showPage('page-metadata-generator');
+        });
     </script>
 </body>
 </html>
