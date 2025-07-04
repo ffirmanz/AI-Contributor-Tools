@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="id" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Contributor Tools</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .drop-zone {
+            border: 2px dashed #d1d5db;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        .dark .drop-zone {
+            border-color: #4b5563;
+        }
+        .drop-zone.drag-over {
+            background-color: #e0f2fe;
+            border-color: #3b82f6;
+        }
+        .dark .drop-zone.drag-over {
+            background-color: #1e3a8a;
+            border-color: #60a5fa;
+        }
+        .spinner {
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a8a8a8;
+            border-radius: 10px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #888;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        .nav-link[aria-current="page"] {
+             background-color: #e0f2fe;
+             color: #1d4ed8;
+        }
+        .dark .nav-link[aria-current="page"] {
+             background-color: #1e3a8a;
+             color: #93c5fd;
+        }
+        .thumbnail.active {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        #zoomModal, #metadataModal {
+            transition: opacity 0.3s ease;
+        }
+        .copy-btn-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 120px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .copy-btn-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300">
+
+    <!-- Navigation Header -->
+    <nav class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400">AI Contributor Tools</h2>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#" class="nav-link text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium" data-page="page-metadata-generator">Metadata Generator</a>
+                        <a href="#" class="nav-link text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium" data-page="page-prompt-generator">Prompt Generator</a>
+                        <a href="#" class="nav-link text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium" data-page="page-image-generator">Image Generator</a>
+                        <a href="#" class="nav-link text-gray-500 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium" data-page="page-trend-analysis">Analisis Tren</a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
+                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 10.607a1 1 0 011.414 0l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM17 12a1 1 0 100 2h-1a1 1 0 100-2h1zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <!-- Mobile menu button -->
+                    <div class="-mr-2 flex md:hidden ml-2">
+                        <button type="button" id="mobile-menu-button" class="bg-gray-200 dark:bg-gray-700 inline-flex items-center justify-center p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none" aria-controls="mobile-menu" aria-expanded="false">
+                            <span class="sr-only">Open main menu</span>
+                            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                            <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu, show/hide based on button state. -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                 <a href="#" class="nav-link block px-3 py-2 rounded-md text-base font-medium" data-page="page-metadata-generator">Metadata Generator</a>
+                 <a href="#" class="nav-link block px-3 py-2 rounded-md text-base font-medium" data-page="page-prompt-generator">Prompt Generator</a>
+                 <a href="#" class="nav-link block px-3 py-2 rounded-md text-base font-medium" data-page="page-image-generator">Image Generator</a>
+                 <a href="#" class="nav-link block px-3 py-2 rounded-md text-base font-medium" data-page="page-trend-analysis">Analisis Tren</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content Containers -->
+    <div id="page-metadata-generator" class="page-content container mx-auto p-4 sm:p-6 md:p-8 max-w-7xl fade-in"></div>
+    <div id="page-prompt-generator" class="page-content container mx-auto p-4 sm:p-6 md:p-8 max-w-7xl hidden fade-in"></div>
+    <div id="page-image-generator" class="page-content container mx-auto p-4 sm:p-6 md:p-8 max-w-7xl hidden fade-in"></div>
+    <div id="page-trend-analysis" class="page-content container mx-auto p-4 sm:p-6 md:p-8 max-w-7xl hidden fade-in"></div>
+    
+    <!-- Global Alert Box -->
+    <div id="alertBox" class="fixed top-20 right-5 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-lg hidden fade-in z-50 dark:bg-red-900 dark:text-red-200 dark:border-red-700" role="alert">
+        <strong class="font-bold">Gagal!</strong>
+        <span id="alertMessage" class="block sm:inline">Sesuatu berjalan salah.</span>
+    </div>
+
+    <!-- Zoom Modal -->
+    <div id="zoomModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-[100] hidden" onclick="this.classList.add('hidden')">
+        <img id="zoomedImage" src="" class="max-w-full max-h-full object-contain" alt="Zoomed Image">
+        <button class="absolute top-4 right-4 text-white text-4xl font-bold">&times;</button>
+    </div>
+
+    <!-- Metadata Modal -->
+    <div id="metadataModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-[101] hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-full overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 border-b pb-3 dark:border-gray-600">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white">Metadata untuk Gambar</h3>
+                <button id="closeMetadataModalBtn" class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">&times;</button>
+            </div>
+            <div id="metadataModalContent" class="space-y-4">
+                <!-- Metadata content will be injected here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // --- Dark Mode Toggle ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themeToggleLightIcon.classList.remove('hidden');
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeToggleDarkIcon.classList.remove('hidden');
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            themeToggleDarkIcon.classList.toggle('hidden');
+            themeToggleLightIcon.classList.toggle('hidden');
+
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+        });
+
+        // --- Page Navigation ---
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page-content');
+        
+        function showPage(pageId) {
+            pages.forEach(page => {
+                if(page.id === pageId) {
+                    page.classList.remove('hidden');
+                } else {
+                    page.classList.add('hidden');
+                }
+            });
+
+            navLinks.forEach(link => {
+                if (link.dataset.page === pageId) {
+                    link.setAttribute('aria-current', 'page');
+                } else {
+                    link.removeAttribute('aria-current');
+                }
+            });
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = e.currentTarget.dataset.page;
+                showPage(pageId);
+            });
+        });
+        
+        // --- Mobile Menu ---
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+
+        // --- Global Alert ---
+        const alertBox = document.getElementById('alertBox');
+        const alertMessage = document.getElementById('alertMessage');
+        function showAlert(message) {
+            alertMessage.textContent = message;
+            alertBox.style.display = 'block';
+            setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+        }
+        
+        // --- Global Copy to Clipboard ---
+        function copyToClipboard(elementId, tooltipId) {
+            const element = document.getElementById(elementId);
+            element.select();
+            element.setSelectionRange(0, 99999); 
+            try {
+                document.execCommand('copy');
+                const tooltip = document.getElementById(tooltipId);
+                const originalText = tooltip.textContent;
+                tooltip.textContent = 'Disalin!';
+                tooltip.style.backgroundColor = '#10b981';
+                setTimeout(() => {
+                    tooltip.textContent = originalText;
+                    tooltip.style.backgroundColor = '#1f2937';
+                }, 2000);
+            } catch (err) {
+                showAlert('Gagal menyalin teks.');
+            }
+        }
+
+
+        // --- Initialize All Modules ---
+        (function initializeAppModules() {
+            // --- Metadata Generator ---
+            (function metadataGenerator() {
+                const page = document.getElementById('page-metadata-generator');
+                page.innerHTML = `
+                    <header class="text-center mb-8 mt-4">
+                        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Generator Metadata Stock</h1>
+                        <p class="mt-2 text-md sm:text-lg text-gray-600 dark:text-gray-400">Unggah gambar Anda untuk membuat kategori, judul, deskripsi, dan kata kunci.</p>
+                    </header>
+                    <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-lg">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">1. Unggah Gambar Anda</label>
+                                <div id="meta-dropZone" class="drop-zone w-full p-10 text-center rounded-lg cursor-pointer">
+                                    <input type="file" id="meta-fileInput" class="hidden" multiple accept="image/jpeg, image/png, image/webp">
+                                    <div class="flex flex-col items-center justify-center space-y-2 text-gray-500 dark:text-gray-400">
+                                         <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-4-4V7a4 4 0 014-4h1.586A3 3 0 0113.414 4.586l1.086 1.086A3 3 0 0016.586 7H17a4 4 0 014 4v1.586A3 3 0 0119.414 14l-1.086 1.086A3 3 0 0016.586 17H16m-4-10h.01M12 10h.01M12 6h.01M12 14h.01M16 14h.01M8 14h.01"></path></svg>
+                                        <p class="font-semibold">Seret & lepas file di sini</p>
+                                        <p class="text-sm">atau klik untuk memilih file</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="meta-modelSelector" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">2. Pilih Model AI</label>
+                                    <select id="meta-modelSelector" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="gemini-2.0-flash" selected>Gemini 2.0 Flash (Bawaan, Cepat)</option>
+                                        <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (Kualitas Tinggi)</option>
+                                    </select>
+                                </div>
+                                <div id="meta-apiKeySection" class="hidden">
+                                    <label for="meta-apiKeyInput" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">API Key Anda</label>
+                                    <input type="password" id="meta-apiKeyInput" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg" placeholder="Masukkan API Key Gemini Anda">
+                                </div>
+                            </div>
+                            <div class="relative flex items-start justify-center">
+                                <div class="flex h-5 items-center">
+                                    <input id="meta-optimize-checkbox" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                </div>
+                                <div class="ml-3 text-sm">
+                                    <label for="meta-optimize-checkbox" class="font-medium text-gray-700 dark:text-gray-200">Optimalkan dengan Tren Pasar</label>
+                                    <p class="text-gray-500 dark:text-gray-400">Hasil lebih relevan, proses sedikit lebih lama.</p>
+                                </div>
+                            </div>
+                            <button id="meta-generateBtn" class="w-full bg-blue-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-blue-700">
+                                <span>Buat Metadata untuk File Terpilih</span>
+                            </button>
+                        </div>
+                        <div id="meta-outputSection" class="mt-10 border-t pt-6 space-y-6 hidden dark:border-gray-700">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Hasil Metadata</h2>
+                                 <div id="meta-exportSection" class="hidden relative inline-block text-left">
+                                    <div>
+                                        <button type="button" id="export-csv-btn" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white dark:bg-gray-700 px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                            Ekspor CSV
+                                            <svg class="-mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div id="export-dropdown-menu" class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                                        <div class="py-1" role="none">
+                                            <a href="#" class="text-gray-700 dark:text-gray-200 block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600" role="menuitem" tabindex="-1" data-platform="adobestock">Adobe Stock</a>
+                                            <a href="#" class="text-gray-700 dark:text-gray-200 block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600" role="menuitem" tabindex="-1" data-platform="shutterstock">Shutterstock</a>
+                                            <a href="#" class="text-gray-700 dark:text-gray-200 block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600" role="menuitem" tabindex="-1" data-platform="dreamstime">Dreamstime</a>
+                                            <a href="#" class="text-gray-700 dark:text-gray-200 block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600" role="menuitem" tabindex="-1" data-platform="freepik">Freepik</a>
+                                            <a href="#" class="text-gray-700 dark:text-gray-200 block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600" role="menuitem" tabindex="-1" data-platform="pngtree">PNG Tree</a>
+                                            <a href="#" class="text-gray-700 dark:text-gray-200 block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600" role="menuitem" tabindex="-1" data-platform="vecteezy">Vecteezy</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="meta-fileList" class="space-y-4"></div>
+                        </div>
+                    </main>
+                `;
+
+                const dropZone = page.querySelector('#meta-dropZone');
+                const fileInput = page.querySelector('#meta-fileInput');
+                const generateBtn = page.querySelector('#meta-generateBtn');
+                const modelSelector = page.querySelector('#meta-modelSelector');
+                const apiKeySection = page.querySelector('#meta-apiKeySection');
+                const apiKeyInput = page.querySelector('#meta-apiKeyInput');
+                const optimizeCheckbox = page.querySelector('#meta-optimize-checkbox');
+                const outputSection = page.querySelector('#meta-outputSection');
+                const fileListContainer = page.querySelector('#meta-fileList');
+                const exportSection = page.querySelector('#meta-exportSection');
+                const exportCsvBtn = page.querySelector('#export-csv-btn');
+                const exportDropdownMenu = page.querySelector('#export-dropdown-menu');
+                
+                let selectedFiles = [];
+                let metadataResults = [];
+
+                dropZone.addEventListener('click', () => fileInput.click());
+                dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+                dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('drag-over');
+                    if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+                });
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length) handleFiles(e.target.files);
+                });
+
+                modelSelector.addEventListener('change', () => {
+                    apiKeySection.classList.toggle('hidden', !modelSelector.value.includes('pro'));
+                });
+
+                function handleFiles(files) {
+                    selectedFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+                    if (selectedFiles.length === 0) {
+                        showAlert("Tidak ada file gambar yang valid dipilih.");
+                        return;
+                    }
+                    outputSection.classList.remove('hidden');
+                    fileListContainer.innerHTML = '';
+                    exportSection.classList.add('hidden');
+                    metadataResults = [];
+
+                    selectedFiles.forEach((file, index) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            fileListContainer.innerHTML += `
+                                <div id="file-row-${index}" class="p-4 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 grid grid-cols-1 md:grid-cols-12 gap-4 items-center fade-in">
+                                    <div class="md:col-span-1"><img src="${e.target.result}" class="w-16 h-16 object-cover rounded-md mx-auto"></div>
+                                    <div class="md:col-span-11">
+                                        <p class="font-bold text-gray-700 dark:text-gray-200 truncate">${file.name}</p>
+                                        <div id="status-${index}" class="text-sm text-gray-500 dark:text-gray-400">Menunggu...</div>
+                                        <div id="metadata-fields-${index}" class="hidden space-y-3 mt-3"></div>
+                                    </div>
+                                </div>`;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                generateBtn.addEventListener('click', async () => {
+                    if (selectedFiles.length === 0) return showAlert('Unggah gambar dahulu.');
+                    if (modelSelector.value.includes('pro') && !apiKeyInput.value.trim()) return showAlert('Masukkan API Key untuk model Pro.');
+
+                    setLoadingState(true);
+                    await Promise.all(selectedFiles.map((file, index) => processFile(file, index)));
+                    setLoadingState(false);
+                    exportSection.classList.remove('hidden');
+                });
+
+                async function processFile(file, index) {
+                    const statusDiv = page.querySelector(`#status-${index}`);
+                    statusDiv.innerHTML = `<div class="flex items-center space-x-2 text-blue-500"><div class="spinner w-4 h-4"></div><span>Menganalisis...</span></div>`;
+                    try {
+                        const base64Data = await getBase64(file);
+                        const isOptimized = optimizeCheckbox.checked;
+
+                        const promptStandard = `You are an expert metadata generator for stock photography platforms. Based on the provided image, generate metadata in English: 1. **category**: Choose one from: People, Business, Food, Nature, Travel, Animals, Technology, Abstract, Lifestyle, Health, Sports, Objects, Backgrounds. 2. **title**: A concise, descriptive title (max 200 chars). 3. **description**: A clear, single-sentence description (max 200 chars). 4. **keywords**: 40-50 relevant keywords (specific to general). Ensure output is ONLY a valid JSON object.`;
+                        const promptOptimized = `You are an expert stock photo metadata analyst. First, visually analyze the provided image to identify its core subjects, actions, and mood. Second, think about the commercial trends and marketable concepts associated with these subjects. Finally, based on both visual analysis and market trends, generate a highly optimized metadata set. The keywords must be ordered from most commercially valuable and specific, to most general. The description should be compelling and under 200 characters. The title should be concise and marketable. Return this as a valid JSON object with keys: "category", "title", "description", "keywords".`;
+
+                        const payload = {
+                            contents: [{ role: "user", parts: [{ text: isOptimized ? promptOptimized : promptStandard }, { inlineData: { mimeType: file.type, data: base64Data } }] }],
+                            generationConfig: {
+                                responseMimeType: "application/json",
+                                responseSchema: { type: "OBJECT", properties: { category: { type: "STRING" }, title: { type: "STRING" }, description: { type: "STRING" }, keywords: { type: "ARRAY", items: { type: "STRING" } } }, required: ["category", "title", "description", "keywords"] }
+                            }
+                        };
+                        const selectedModel = modelSelector.value;
+                        let apiKey = selectedModel.includes('pro') ? apiKeyInput.value.trim() : "";
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
+                        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                        }
+                        const result = await response.json();
+                        
+                        if (!result.candidates || result.candidates.length === 0) {
+                            const blockReason = result.promptFeedback?.blockReason || "TIDAK DIKETAHUI";
+                            throw new Error(`Respons API diblokir (Alasan: ${blockReason}). Coba gambar lain.`);
+                        }
+                        
+                        const textContent = result.candidates[0]?.content?.parts?.[0]?.text;
+
+                        if (textContent && textContent.trim().startsWith('{')) {
+                            try {
+                                const metadata = JSON.parse(textContent);
+                                metadataResults[index] = { filename: file.name, ...metadata };
+                                populateMetadataFields(index, metadata);
+                                statusDiv.textContent = 'Selesai!';
+                                statusDiv.classList.add('text-green-600', 'font-semibold');
+                            } catch (e) {
+                                throw new Error(`Gagal memproses respons JSON dari AI. Error: ${e.message}`);
+                            }
+                        } else {
+                            const finishReason = result.candidates[0]?.finishReason || "TIDAK DIKETAHUI";
+                            throw new Error(`Respons API kosong atau tidak valid (Alasan: ${finishReason}).`);
+                        }
+
+                    } catch (error) {
+                        console.error(`Error processing file ${file.name}:`, error);
+                        statusDiv.textContent = `Error: ${error.message}`;
+                        statusDiv.classList.add('text-red-600', 'font-semibold');
+                    }
+                }
+                
+                function populateMetadataFields(index, data) {
+                    const container = page.querySelector(`#metadata-fields-${index}`);
+                    container.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="block text-xs font-medium text-gray-600 dark:text-gray-300">Kategori</label><input type="text" id="category-${index}" value="${data.category || ''}" class="mt-1 w-full p-2 border rounded-md text-sm dark:bg-gray-600 dark:border-gray-500"></div><div><label class="block text-xs font-medium text-gray-600 dark:text-gray-300">Judul</label><input type="text" id="title-${index}" value="${data.title || ''}" class="mt-1 w-full p-2 border rounded-md text-sm dark:bg-gray-600 dark:border-gray-500"></div></div><div><label class="block text-xs font-medium text-gray-600 dark:text-gray-300">Deskripsi</label><textarea id="description-${index}" rows="2" class="mt-1 w-full p-2 border rounded-md text-sm dark:bg-gray-600 dark:border-gray-500">${data.description || ''}</textarea></div><div><label class="block text-xs font-medium text-gray-600 dark:text-gray-300">Kata Kunci</label><textarea id="keywords-${index}" rows="4" class="mt-1 w-full p-2 border rounded-md text-sm dark:bg-gray-600 dark:border-gray-500">${(data.keywords || []).join(', ')}</textarea></div>`;
+                    container.classList.remove('hidden');
+                }
+
+                function setLoadingState(isLoading) {
+                    generateBtn.disabled = isLoading;
+                    generateBtn.querySelector('span').textContent = isLoading ? 'Sedang Memproses...' : 'Buat Metadata untuk File Terpilih';
+                }
+
+                function getBase64(file) {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = () => resolve(reader.result.split(',')[1]);
+                        reader.onerror = error => reject(error);
+                    });
+                }
+
+                exportCsvBtn.addEventListener('click', () => {
+                    exportDropdownMenu.classList.toggle('hidden');
+                });
+
+                exportDropdownMenu.addEventListener('click', (e) => {
+                    if(e.target.tagName === 'A') {
+                        const platform = e.target.dataset.platform;
+                        exportToCSV(platform);
+                        exportDropdownMenu.classList.add('hidden');
+                    }
+                });
+                
+                window.addEventListener('click', function(e){   
+                    if (exportCsvBtn && !exportCsvBtn.contains(e.target)){
+                        exportDropdownMenu.classList.add('hidden');
+                    }
+                });
+
+                function exportToCSV(platform) {
+                    if (metadataResults.length === 0) return showAlert("Tidak ada metadata untuk diekspor.");
+                    let headers, rows;
+                    const currentData = selectedFiles.map((file, index) => {
+                        if (!metadataResults[index]) return null;
+                        return { filename: file.name, category: page.querySelector(`#category-${index}`).value, title: page.querySelector(`#title-${index}`).value, description: page.querySelector(`#description-${index}`).value, keywords: page.querySelector(`#keywords-${index}`).value };
+                    }).filter(Boolean);
+                    
+                    if (platform === 'adobestock') {
+                        headers = ['Filename', 'Title', 'Keywords', 'Category'];
+                        rows = currentData.map(d => [d.filename, d.title, d.keywords, d.category]);
+                    } else if (platform === 'shutterstock') {
+                        headers = ['Filename', 'Description', 'Keywords', 'Category 1'];
+                        rows = currentData.map(d => [d.filename, d.description, d.keywords, d.category]);
+                    } else if (platform === 'pngtree' || platform === 'freepik') {
+                        headers = ['Filename', 'Title', 'Keywords'];
+                        rows = currentData.map(d => [d.filename, d.title, d.keywords]);
+                    } else if (platform === 'dreamstime' || platform === 'vecteezy') {
+                        headers = ['Filename', 'Title', 'Description', 'Keywords'];
+                        rows = currentData.map(d => [d.filename, d.title, d.description, d.keywords]);
+                    }
+
+                    const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => `"${e.join('","')}"`).join("\n");
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodeURI(csvContent));
+                    link.setAttribute("download", `${platform}_metadata_${new Date().toISOString().slice(0,10)}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            })();
+
+            // --- Image Generator ---
+            (function imageGenerator() {
+                const page = document.getElementById('page-image-generator');
+                page.innerHTML = `
+                     <header class="text-center mb-8 mt-4">
+                        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Image Generator</h1>
+                        <p class="mt-2 text-md sm:text-lg text-gray-600 dark:text-gray-400">Buat gambar unik dari deskripsi teks Anda.</p>
+                    </header>
+                    <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-lg">
+                        <div class="space-y-6">
+                            <div>
+                                <label for="imgGenPrompt" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Deskripsi Gambar (Prompt)</label>
+                                <textarea id="imgGenPrompt" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg" placeholder="Contoh: Seekor rubah merah yang sedang tidur di atas salju, gaya cat air, pencahayaan lembut"></textarea>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                 <div>
+                                    <label for="imgGenAspectRatio" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Rasio Aspek</label>
+                                    <select id="imgGenAspectRatio" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                        <option value="1:1" selected>1:1 (Persegi)</option>
+                                        <option value="16:9">16:9 (Lanskap)</option>
+                                        <option value="9:16">9:16 (Potret)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="imgGenCount" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Jumlah Gambar</label>
+                                    <select id="imgGenCount" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                        <option value="1" selected>1 Gambar</option>
+                                        <option value="2">2 Gambar</option>
+                                        <option value="3">3 Gambar</option>
+                                        <option value="4">4 Gambar</option>
+                                    </select>
+                                </div>
+                            </div>
+                             <div class="flex flex-col sm:flex-row gap-4">
+                                <button id="imgGenBtn" class="w-full sm:flex-1 bg-purple-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-purple-700 flex items-center justify-center space-x-2">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l-1-1m6-3l-2-2"></path></svg>
+                                    <span>Buat Gambar</span>
+                                </button>
+                                <button id="imgGenCsvBtn" class="w-full sm:w-auto bg-gray-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-gray-700 flex items-center justify-center space-x-2">
+                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                    <span>Unggah CSV</span>
+                                </button>
+                                <input type="file" id="csvFileInput" class="hidden" accept=".csv">
+                             </div>
+                             <div class="text-center mt-2">
+                                <p id="csvPromptCount" class="text-sm text-gray-600 dark:text-gray-400 font-medium hidden"></p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">File CSV harus memiliki satu kolom dengan header \`prompt\`.</p>
+                             </div>
+                        </div>
+                        <div id="imgGenOutput" class="mt-10 border-t pt-6 text-center hidden dark:border-gray-700">
+                             <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Hasil Galeri</h2>
+                                <div class="flex gap-4">
+                                    <button id="genMetaForImageBtn" class="text-sm text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 font-semibold flex items-center gap-1 disabled:text-gray-400 disabled:cursor-not-allowed">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"></path></svg>
+                                        Buat Metadata
+                                    </button>
+                                    <button id="batchDownloadBtn" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-semibold flex items-center gap-1 disabled:text-gray-400 disabled:cursor-not-allowed">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                        <span id="batchDownloadText">Unduh Semua (ZIP)</span>
+                                    </button>
+                                    <button id="clearGalleryBtn" class="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-semibold flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        Bersihkan
+                                    </button>
+                                </div>
+                             </div>
+                             <div class="relative group w-full max-w-2xl mx-auto mb-4">
+                                <div id="mainImageContainer" class="w-full bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center cursor-pointer min-h-[300px] sm:min-h-[500px]">
+                                    <!-- Main image will be displayed here -->
+                                </div>
+                                <button id="prevImageBtn" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-30 text-white p-2 rounded-full hover:bg-opacity-50 transition opacity-0 group-hover:opacity-100 hidden">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                </button>
+                                <button id="nextImageBtn" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-30 text-white p-2 rounded-full hover:bg-opacity-50 transition opacity-0 group-hover:opacity-100 hidden">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                </button>
+                             </div>
+                             <div id="thumbnailContainer" class="flex justify-center gap-2 overflow-x-auto p-2">
+                                <!-- Thumbnails will be displayed here -->
+                             </div>
+                        </div>
+                    </main>
+                `;
+            
+            const imgGenBtn = page.querySelector('#imgGenBtn');
+            const imgGenCsvBtn = page.querySelector('#imgGenCsvBtn');
+            const csvFileInput = page.querySelector('#csvFileInput');
+            const csvPromptCount = page.querySelector('#csvPromptCount');
+            const imgGenPrompt = page.querySelector('#imgGenPrompt');
+            const imgGenAspectRatio = page.querySelector('#imgGenAspectRatio');
+            const imgGenCount = page.querySelector('#imgGenCount');
+            const imgGenOutput = page.querySelector('#imgGenOutput');
+            const mainImageContainer = page.querySelector('#mainImageContainer');
+            const thumbnailContainer = page.querySelector('#thumbnailContainer');
+            const zoomModal = document.getElementById('zoomModal');
+            const zoomedImage = document.getElementById('zoomedImage');
+            const clearGalleryBtn = page.querySelector('#clearGalleryBtn');
+            const batchDownloadBtn = page.querySelector('#batchDownloadBtn');
+            const batchDownloadText = page.querySelector('#batchDownloadText');
+            const genMetaForImageBtn = page.querySelector('#genMetaForImageBtn');
+            const metadataModal = document.getElementById('metadataModal');
+            const metadataModalContent = document.getElementById('metadataModalContent');
+            const closeMetadataModalBtn = document.getElementById('closeMetadataModalBtn');
+            const prevImageBtn = page.querySelector('#prevImageBtn');
+            const nextImageBtn = page.querySelector('#nextImageBtn');
+            
+            let promptsToProcess = [];
+            let generatedImagesData = [];
+            let activeImageIndex = -1;
+            
+            imgGenPrompt.addEventListener('input', () => {
+                if (promptsToProcess.length > 0) {
+                    promptsToProcess = [];
+                    csvPromptCount.classList.add('hidden');
+                }
+            });
+
+            imgGenBtn.addEventListener('click', () => {
+                let finalPrompts = [];
+                if (promptsToProcess.length > 0) {
+                    finalPrompts = promptsToProcess;
+                } else {
+                    const singlePrompt = imgGenPrompt.value.trim();
+                    if (singlePrompt) {
+                        finalPrompts.push(singlePrompt);
+                    }
+                }
+
+                if (finalPrompts.length === 0) {
+                    return showAlert('Harap masukkan prompt atau unggah file CSV.');
+                }
+                
+                processPrompts(finalPrompts);
+            });
+
+            imgGenCsvBtn.addEventListener('click', () => csvFileInput.click());
+
+            csvFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const text = e.target.result;
+                    try {
+                        const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+                        if (lines.length < 2) throw new Error("File CSV kosong atau hanya berisi header.");
+                        
+                        const header = lines[0].trim().toLowerCase().split(',');
+                        const promptIndex = header.indexOf('prompt');
+
+                        if (promptIndex === -1) {
+                            throw new Error("File CSV harus memiliki kolom dengan header 'prompt'.");
+                        }
+
+                        const prompts = lines.slice(1).map(line => {
+                            const columns = line.split(',');
+                            return columns[promptIndex] ? columns[promptIndex].trim().replace(/"/g, '') : '';
+                        }).filter(Boolean);
+
+                        if (prompts.length === 0) {
+                            csvPromptCount.classList.add('hidden');
+                            throw new Error("Tidak ada prompt yang valid ditemukan di file CSV.");
+                        }
+                        
+                        promptsToProcess = prompts;
+                        imgGenPrompt.value = ''; // Clear textarea
+                        csvPromptCount.textContent = `${promptsToProcess.length} prompt berhasil diunggah dan siap dibuat.`;
+                        csvPromptCount.classList.remove('hidden');
+
+                    } catch (error) {
+                        showAlert(error.message);
+                        promptsToProcess = [];
+                        csvPromptCount.classList.add('hidden');
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = ''; // Reset file input
+            });
+            
+            mainImageContainer.addEventListener('click', () => {
+                const mainImg = mainImageContainer.querySelector('img');
+                if (mainImg) {
+                    zoomedImage.src = mainImg.src;
+                    zoomModal.classList.remove('hidden');
+                }
+            });
+
+            clearGalleryBtn.addEventListener('click', () => {
+                generatedImagesData = [];
+                displayGallery();
+            });
+
+            genMetaForImageBtn.addEventListener('click', async () => {
+                if (activeImageIndex === -1) return;
+                
+                const imageData = generatedImagesData[activeImageIndex];
+                if (imageData.metadata) {
+                    showMetadataModal(imageData.metadata);
+                    return;
+                }
+
+                genMetaForImageBtn.disabled = true;
+                genMetaForImageBtn.innerHTML = `<div class="spinner w-5 h-5 border-2"></div>`;
+
+                try {
+                    const metadata = await fetchMetadataForImage(imageData.src);
+                    generatedImagesData[activeImageIndex].metadata = metadata;
+                    showMetadataModal(metadata);
+                } catch (error) {
+                    showAlert('Gagal membuat metadata untuk gambar ini.');
+                } finally {
+                    genMetaForImageBtn.disabled = false;
+                    genMetaForImageBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"></path></svg> Buat Metadata`;
+                }
+            });
+
+            closeMetadataModalBtn.addEventListener('click', () => metadataModal.classList.add('hidden'));
+
+            batchDownloadBtn.addEventListener('click', async () => {
+                if (generatedImagesData.length === 0) {
+                    showAlert('Tidak ada gambar di galeri untuk diunduh.');
+                    return;
+                }
+
+                batchDownloadBtn.disabled = true;
+                batchDownloadText.textContent = 'Membuat metadata...';
+
+                try {
+                    for (let i = 0; i < generatedImagesData.length; i++) {
+                        if (!generatedImagesData[i].metadata) {
+                            batchDownloadText.textContent = `Membuat metadata ${i + 1}/${generatedImagesData.length}...`;
+                            generatedImagesData[i].metadata = await fetchMetadataForImage(generatedImagesData[i].src);
+                        }
+                    }
+
+                    batchDownloadText.textContent = 'Menyiapkan ZIP...';
+                    const zip = new JSZip();
+                    
+                    generatedImagesData.forEach((imgData, index) => {
+                        const base64Data = imgData.src.split(',')[1];
+                        zip.file(`image_${index + 1}.png`, base64Data, { base64: true });
+                    });
+
+                    const platforms = ['adobestock', 'shutterstock', 'pngtree'];
+                    platforms.forEach(platform => {
+                        const csvContent = buildCsvContent(generatedImagesData, platform);
+                        zip.file(`metadata_${platform}.csv`, csvContent);
+                    });
+                    
+                    const content = await zip.generateAsync({ type: "blob" });
+                    
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(content);
+                    link.download = `gallery_${Date.now()}.zip`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                } catch (error) {
+                    showAlert('Gagal membuat file ZIP.');
+                    console.error('ZIP creation error:', error);
+                } finally {
+                    batchDownloadBtn.disabled = false;
+                    batchDownloadText.textContent = 'Unduh Semua (ZIP)';
+                }
+            });
+
+            async function processPrompts(prompts) {
+                const aspectRatio = imgGenAspectRatio.value;
+                const sampleCount = parseInt(imgGenCount.value, 10);
+
+                imgGenBtn.disabled = true;
+                imgGenCsvBtn.disabled = true;
+                imgGenOutput.classList.remove('hidden');
+                csvPromptCount.classList.add('hidden');
+                
+                if (prompts === promptsToProcess) {
+                    generatedImagesData = [];
+                }
+
+                for (let i = 0; i < prompts.length; i++) {
+                    const prompt = prompts[i];
+                    
+                    mainImageContainer.innerHTML = `
+                        <div class="text-center p-4">
+                            <div class="spinner w-16 h-16 rounded-full border-4 border-transparent mx-auto"></div>
+                            <p class="mt-4 text-gray-600 dark:text-gray-300">Memproses prompt ${i + 1} dari ${prompts.length}: "${prompt.substring(0, 50)}..."</p>
+                        </div>`;
+                    thumbnailContainer.innerHTML = '';
+
+                    try {
+                        const payload = { 
+                            instances: [{ prompt: prompt }], 
+                            parameters: { 
+                                "sampleCount": sampleCount,
+                                "aspectRatio": aspectRatio
+                            } 
+                        };
+                        const apiKey = "";
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                        }
+
+                        const result = await response.json();
+
+                        if (result.predictions && result.predictions.length > 0) {
+                            result.predictions.forEach(prediction => {
+                                if (prediction.bytesBase64Encoded) {
+                                    generatedImagesData.push({
+                                        src: `data:image/png;base64,${prediction.bytesBase64Encoded}`,
+                                        prompt: prompt,
+                                        metadata: null
+                                    });
+                                }
+                            });
+                        } else {
+                            throw new Error('Respons API tidak valid atau tidak berisi gambar.');
+                        }
+                    } catch (error) {
+                        console.error('Image generation error:', error);
+                        showAlert(`Gagal memproses prompt: "${prompt.substring(0,50)}..."`);
+                    }
+                    
+                    displayGallery();
+                }
+                
+                promptsToProcess = [];
+                imgGenBtn.disabled = false;
+                imgGenCsvBtn.disabled = false;
+            }
+
+            function displayGallery() {
+                mainImageContainer.innerHTML = '';
+                thumbnailContainer.innerHTML = '';
+
+                if (generatedImagesData.length === 0) {
+                    mainImageContainer.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Galeri kosong. Buat gambar untuk memulai.</p>`;
+                    batchDownloadBtn.disabled = true;
+                    genMetaForImageBtn.disabled = true;
+                    prevImageBtn.classList.add('hidden');
+                    nextImageBtn.classList.add('hidden');
+                    return;
+                }
+                
+                batchDownloadBtn.disabled = false;
+                genMetaForImageBtn.disabled = false;
+                
+                if (generatedImagesData.length > 1) {
+                    prevImageBtn.classList.remove('hidden');
+                    nextImageBtn.classList.remove('hidden');
+                } else {
+                    prevImageBtn.classList.add('hidden');
+                    nextImageBtn.classList.add('hidden');
+                }
+
+
+                generatedImagesData.forEach((imgData, index) => {
+                    const thumbWrapper = document.createElement('div');
+                    thumbWrapper.className = 'relative flex-shrink-0 group';
+
+                    const thumb = document.createElement('img');
+                    thumb.src = imgData.src;
+                    thumb.className = 'thumbnail w-20 h-20 object-cover rounded-md cursor-pointer border-2 border-transparent transition';
+                    thumb.dataset.index = index;
+                    thumb.addEventListener('click', () => updateMainImage(index));
+                    
+                    const overlay = document.createElement('div');
+                    overlay.className = 'absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center gap-2';
+                    
+                    const downloadBtn = document.createElement('a');
+                    downloadBtn.href = imgData.src;
+                    downloadBtn.download = `image_${index + 1}.png`;
+                    downloadBtn.className = 'text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity';
+                    downloadBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>`;
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity';
+                    deleteBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        generatedImagesData.splice(index, 1);
+                        displayGallery();
+                    });
+
+                    overlay.appendChild(downloadBtn);
+                    overlay.appendChild(deleteBtn);
+                    thumbWrapper.appendChild(thumb);
+                    thumbWrapper.appendChild(overlay);
+                    thumbnailContainer.appendChild(thumbWrapper);
+                });
+
+                updateMainImage(generatedImagesData.length > 0 ? 0 : -1);
+            }
+
+            function updateMainImage(index) {
+                if (index < 0 || index >= generatedImagesData.length) {
+                    mainImageContainer.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Galeri kosong. Buat gambar untuk memulai.</p>`;
+                    activeImageIndex = -1;
+                    genMetaForImageBtn.disabled = true;
+                    return;
+                }
+                activeImageIndex = index;
+                genMetaForImageBtn.disabled = false;
+                const imgData = generatedImagesData[index];
+                mainImageContainer.innerHTML = `<img src="${imgData.src}" alt="${imgData.prompt}" class="max-w-full max-h-full object-contain rounded-lg">`;
+
+                document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
+                    thumb.classList.toggle('active', i === index);
+                });
+            }
+            
+            prevImageBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (generatedImagesData.length > 1) {
+                    let newIndex = activeImageIndex - 1;
+                    if (newIndex < 0) {
+                        newIndex = generatedImagesData.length - 1;
+                    }
+                    updateMainImage(newIndex);
+                }
+            });
+
+            nextImageBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (generatedImagesData.length > 1) {
+                    let newIndex = activeImageIndex + 1;
+                    if (newIndex >= generatedImagesData.length) {
+                        newIndex = 0;
+                    }
+                    updateMainImage(newIndex);
+                }
+            });
+
+
+            async function fetchMetadataForImage(base64Src) {
+                const base64Data = base64Src.split(',')[1];
+                const prompt = `You are an expert metadata generator for stock photography platforms. Based on the provided image, generate metadata in English: 1. **category**: Choose one from: People, Business, Food, Nature, Travel, Animals, Technology, Abstract, Lifestyle, Health, Sports, Objects, Backgrounds. 2. **title**: A concise, descriptive title (max 150 chars). 3. **description**: A clear, single-sentence description. 4. **keywords**: 40-50 relevant keywords (specific to general). Ensure output is ONLY a valid JSON object.`;
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { mimeType: 'image/png', data: base64Data } }] }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: { type: "OBJECT", properties: { category: { type: "STRING" }, title: { type: "STRING" }, description: { type: "STRING" }, keywords: { type: "ARRAY", items: { type: "STRING" } } }, required: ["category", "title", "description", "keywords"] }
+                    }
+                };
+                const apiKey = ""; // Use default environment key
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                }
+                const result = await response.json();
+                
+                if (!result.candidates || result.candidates.length === 0) {
+                    const blockReason = result.promptFeedback?.blockReason || "TIDAK DIKETAHUI";
+                    throw new Error(`Respons API diblokir (Alasan: ${blockReason}). Coba gambar lain.`);
+                }
+                const textContent = result.candidates[0]?.content?.parts?.[0]?.text;
+                 if (textContent && textContent.trim().startsWith('{')) {
+                    return JSON.parse(textContent);
+                } else {
+                    const finishReason = result.candidates[0]?.finishReason || "TIDAK DIKETAHUI";
+                    throw new Error(`Respons API kosong atau tidak valid (Alasan: ${finishReason}).`);
+                }
+            }
+
+            function showMetadataModal(metadata) {
+                metadataModalContent.innerHTML = `
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Judul</label>
+                            <div class="relative mt-1">
+                                <input type="text" id="modalTitle" class="w-full p-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500" value="${metadata.title || ''}" readonly>
+                                <button onclick="copyToClipboard('modalTitle', 'tooltipModalTitle')" class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 hover:text-blue-600 copy-btn-tooltip">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    <span id="tooltipModalTitle" class="tooltip-text">Salin Judul</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Deskripsi</label>
+                            <div class="relative mt-1">
+                                <textarea id="modalDescription" rows="2" class="w-full p-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500" readonly>${metadata.description || ''}</textarea>
+                                <button onclick="copyToClipboard('modalDescription', 'tooltipModalDesc')" class="absolute top-2 right-0 flex items-center px-2 text-gray-500 hover:text-blue-600 copy-btn-tooltip">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    <span id="tooltipModalDesc" class="tooltip-text">Salin Deskripsi</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Kata Kunci</label>
+                            <div class="relative mt-1">
+                                <textarea id="modalKeywords" rows="4" class="w-full p-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-600 dark:border-gray-500" readonly>${(metadata.keywords || []).join(', ')}</textarea>
+                                <button onclick="copyToClipboard('modalKeywords', 'tooltipModalKeys')" class="absolute top-2 right-0 flex items-center px-2 text-gray-500 hover:text-blue-600 copy-btn-tooltip">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    <span id="tooltipModalKeys" class="tooltip-text">Salin Kata Kunci</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                metadataModal.classList.remove('hidden');
+            }
+
+            function buildCsvContent(data, platform) {
+                let headers, rows;
+                const currentData = data.map((d, i) => ({
+                    filename: `image_${i + 1}.png`,
+                    category: d.metadata?.category || '',
+                    title: d.metadata?.title || '',
+                    description: d.metadata?.description || '',
+                    keywords: (d.metadata?.keywords || []).join(', ')
+                }));
+
+                if (platform === 'adobestock') {
+                    headers = ['Filename', 'Title', 'Keywords', 'Category'];
+                    rows = currentData.map(d => [d.filename, d.title, d.keywords, d.category]);
+                } else if (platform === 'shutterstock') {
+                    headers = ['Filename', 'Description', 'Keywords', 'Category 1'];
+                    rows = currentData.map(d => [d.filename, d.description, d.keywords, d.category]);
+                } else { // pngtree, freepik, dreamstime, vecteezy
+                    headers = ['Filename', 'Title', 'Description', 'Keywords'];
+                    rows = currentData.map(d => [d.filename, d.title, d.description, d.keywords]);
+                }
+                return headers.join(",") + "\n" + rows.map(e => `"${e.join('","')}"`).join("\n");
+            }
+
+        })();
+        
+        // --- Prompt Generator ---
+        (function promptGenerator() {
+            const page = document.getElementById('page-prompt-generator');
+            page.innerHTML = `
+                <header class="text-center mb-8 mt-4">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Prompt Generator</h1>
+                    <p class="mt-2 text-md sm:text-lg text-gray-600 dark:text-gray-400">Buat variasi prompt kreatif dari beberapa kata kunci inti.</p>
+                </header>
+                <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-lg">
+                    <div class="space-y-6">
+                        <div>
+                            <label for="promptGenKeywords" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">1. Masukkan Kata Kunci Inti</label>
+                            <input type="text" id="promptGenKeywords" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg" placeholder="Contoh: naga, kastil, bulan purnama, fantasi">
+                        </div>
+                        <div>
+                            <label for="promptGenCount" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">2. Jumlah Variasi</label>
+                            <select id="promptGenCount" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg">
+                                <option value="5" selected>5 Variasi</option>
+                                <option value="10">10 Variasi</option>
+                                <option value="25">25 Variasi</option>
+                                <option value="50">50 Variasi</option>
+                            </select>
+                        </div>
+                        <button id="promptGenBtn" class="w-full bg-teal-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-teal-700 flex items-center justify-center space-x-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                            <span>Buat Variasi Prompt</span>
+                        </button>
+                    </div>
+                    <div id="promptGenOutput" class="mt-10 border-t pt-6 hidden dark:border-gray-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Hasil Prompt</h2>
+                            <div class="flex gap-4">
+                                <button id="exportPromptsBtn" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold flex items-center gap-1">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                    Ekspor CSV
+                                </button>
+                            </div>
+                        </div>
+                        <div id="promptGenResultList" class="space-y-2 max-h-96 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border dark:border-gray-600">
+                            <!-- Generated prompts will be listed here -->
+                        </div>
+                    </div>
+                </main>
+            `;
+
+            const promptGenBtn = page.querySelector('#promptGenBtn');
+            const promptGenKeywords = page.querySelector('#promptGenKeywords');
+            const promptGenCount = page.querySelector('#promptGenCount');
+            const promptGenOutput = page.querySelector('#promptGenOutput');
+            const promptGenResultList = page.querySelector('#promptGenResultList');
+            const exportPromptsBtn = page.querySelector('#exportPromptsBtn');
+            let lastGeneratedPrompts = [];
+
+            promptGenBtn.addEventListener('click', async () => {
+                const keywords = promptGenKeywords.value.trim();
+                const count = promptGenCount.value;
+                if (!keywords) return showAlert('Harap masukkan beberapa kata kunci inti.');
+
+                promptGenBtn.disabled = true;
+                promptGenBtn.querySelector('span').textContent = 'Membuat...';
+                promptGenResultList.innerHTML = `<div class="flex justify-center p-4"><div class="spinner w-8 h-8"></div></div>`;
+                promptGenOutput.classList.remove('hidden');
+
+                try {
+                    const metaPrompt = `Based on the core keywords "${keywords}", generate ${count} creative and detailed text-to-image prompts suitable for stock photography. Each prompt should be a unique variation, exploring different styles (like photorealistic, watercolor, 3D render), compositions (like close-up, wide-angle), and moods. Return the result as a valid JSON array of strings.`;
+                    const payload = {
+                        contents: [{ role: "user", parts: [{ text: metaPrompt }] }],
+                        generationConfig: { responseMimeType: "application/json" }
+                    };
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                    }
+                    const result = await response.json();
+                    
+                    if (!result.candidates || result.candidates.length === 0) {
+                        const blockReason = result.promptFeedback?.blockReason || "TIDAK DIKETAHUI";
+                        throw new Error(`Respons API diblokir (Alasan: ${blockReason}).`);
+                    }
+                    
+                    const textContent = result.candidates[0]?.content?.parts?.[0]?.text;
+                    if (textContent && textContent.trim().startsWith('[')) {
+                        const generatedPrompts = JSON.parse(textContent);
+                        lastGeneratedPrompts = generatedPrompts;
+                        
+                        promptGenResultList.innerHTML = '';
+                        generatedPrompts.forEach(p => {
+                            const li = document.createElement('li');
+                            li.className = 'p-2 bg-white dark:bg-gray-600 rounded';
+                            li.textContent = p;
+                            promptGenResultList.appendChild(li);
+                        });
+                    } else {
+                        const finishReason = result.candidates[0]?.finishReason || "TIDAK DIKETAHUI";
+                        throw new Error(`Respons API kosong atau tidak valid (Alasan: ${finishReason}).`);
+                    }
+
+                } catch (error) {
+                    showAlert('Gagal membuat variasi prompt.');
+                    console.error('Prompt generation error:', error);
+                    promptGenResultList.innerHTML = `<p class="text-red-500">Terjadi kesalahan.</p>`;
+                } finally {
+                    promptGenBtn.disabled = false;
+                    promptGenBtn.querySelector('span').textContent = 'Buat Variasi Prompt';
+                }
+            });
+
+            exportPromptsBtn.addEventListener('click', () => {
+                if (lastGeneratedPrompts.length === 0) return showAlert('Tidak ada prompt untuk diekspor.');
+                const csvContent = "data:text/csv;charset=utf-8," + "prompt\n" + lastGeneratedPrompts.map(p => `"${p.replace(/"/g, '""')}"`).join("\n");
+                const link = document.createElement("a");
+                link.setAttribute("href", encodeURI(csvContent));
+                link.setAttribute("download", `generated_prompts_${Date.now()}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        })();
+
+        // --- Trend Analysis ---
+        (function trendAnalysis() {
+            const page = document.getElementById('page-trend-analysis');
+            page.innerHTML = `
+                <header class="text-center mb-8 mt-4">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Analisis Tren Pasar</h1>
+                    <p class="mt-2 text-md sm:text-lg text-gray-600 dark:text-gray-400">Dapatkan wawasan tentang kata kunci, konsep, dan gaya yang sedang populer.</p>
+                </header>
+                <main class="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-lg">
+                    <div class="space-y-6">
+                        <div>
+                            <label for="trendTopicInput" class="block text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Masukkan Topik atau Kata Kunci</label>
+                            <input type="text" id="trendTopicInput" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg" placeholder="Contoh: liburan musim panas, teknologi AI, makanan sehat">
+                        </div>
+                        <button id="trendAnalysisBtn" class="w-full bg-green-600 text-white font-bold py-4 px-6 rounded-lg hover:bg-green-700 flex items-center justify-center space-x-2">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                            <span>Analisis Tren Pasar</span>
+                        </button>
+                    </div>
+                    <div id="trendAnalysisOutput" class="mt-10 border-t pt-6 hidden dark:border-gray-700">
+                        <!-- Trend analysis results will be injected here -->
+                    </div>
+                </main>
+            `;
+            const trendAnalysisBtn = page.querySelector('#trendAnalysisBtn');
+            const trendTopicInput = page.querySelector('#trendTopicInput');
+            const trendAnalysisOutput = page.querySelector('#trendAnalysisOutput');
+
+            trendAnalysisBtn.addEventListener('click', async () => {
+                const topic = trendTopicInput.value.trim();
+                if (!topic) {
+                    showAlert('Harap masukkan topik untuk dianalisis.');
+                    return;
+                }
+
+                trendAnalysisBtn.disabled = true;
+                trendAnalysisBtn.querySelector('span').textContent = 'Menganalisis...';
+                trendAnalysisOutput.innerHTML = `<div class="flex justify-center p-8"><div class="spinner w-12 h-12"></div></div>`;
+                trendAnalysisOutput.classList.remove('hidden');
+
+                try {
+                    const prompt = `You are a market research analyst for stock photography platforms like Adobe Stock and Shutterstock. Based on the topic "${topic}", provide a trend analysis. Give me: 1. A list of 10-15 popular and niche keywords. 2. A list of 3-4 trending visual concepts with brief explanations. 3. A list of 3 popular color palettes with descriptions. 4. 2-3 actionable tips for contributors. Return the result ONLY as a valid JSON object with the keys: 'keywords' (array of strings), 'concepts' (array of objects with 'name' and 'description' keys), 'palettes' (array of objects with 'name' and 'description' keys), 'tips' (array of strings).`;
+                    
+                    const payload = {
+                        contents: [{ role: "user", parts: [{ text: prompt }] }],
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    keywords: { type: "ARRAY", items: { type: "STRING" } },
+                                    concepts: { type: "ARRAY", items: { type: "OBJECT", properties: { name: { type: "STRING" }, description: { type: "STRING" } } } },
+                                    palettes: { type: "ARRAY", items: { type: "OBJECT", properties: { name: { type: "STRING" }, description: { type: "STRING" } } } },
+                                    tips: { type: "ARRAY", items: { type: "STRING" } }
+                                },
+                                required: ["keywords", "concepts", "palettes", "tips"]
+                            }
+                        }
+                    };
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                    }
+                    
+                    const result = await response.json();
+                    
+                    if (!result.candidates || result.candidates.length === 0) {
+                        const blockReason = result.promptFeedback?.blockReason || "TIDAK DIKETAHUI";
+                        throw new Error(`Respons API diblokir (Alasan: ${blockReason}).`);
+                    }
+                    
+                    const textContent = result.candidates[0]?.content?.parts?.[0]?.text;
+                    if (textContent && textContent.trim().startsWith('{')) {
+                        const analysis = JSON.parse(textContent);
+                        displayTrendAnalysis(analysis, topic);
+                    } else {
+                        const finishReason = result.candidates[0]?.finishReason || "TIDAK DIKETAHUI";
+                        throw new Error(`Respons API kosong atau tidak valid (Alasan: ${finishReason}).`);
+                    }
+
+                } catch (error) {
+                    showAlert('Gagal melakukan analisis tren.');
+                    console.error('Trend analysis error:', error);
+                    trendAnalysisOutput.innerHTML = `<p class="text-red-500 text-center">Terjadi kesalahan saat menganalisis. Silakan coba lagi.</p>`;
+                } finally {
+                    trendAnalysisBtn.disabled = false;
+                    trendAnalysisBtn.querySelector('span').textContent = 'Analisis Tren Pasar';
+                }
+            });
+
+            function displayTrendAnalysis(data, topic) {
+                let html = `<h3 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-6">Hasil Analisis Tren untuk: <span class="text-green-600 dark:text-green-400">${topic}</span></h3>`;
+                html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-6">`;
+
+                // Keywords Card
+                html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">📈 Kata Kunci Populer</h4>
+                            <div class="flex flex-wrap gap-2">
+                                ${data.keywords.map(kw => `<span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">${kw}</span>`).join('')}
+                            </div>
+                         </div>`;
+                
+                // Tips Card
+                html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg row-span-2">
+                            <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">⭐ Saran Tambahan</h4>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
+                                ${data.tips.map(tip => `<li>${tip}</li>`).join('')}
+                            </ul>
+                         </div>`;
+
+                // Concepts Card
+                html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">💡 Konsep Visual Tren</h4>
+                            <div class="space-y-3">
+                                ${data.concepts.map(c => `<div><p class="font-semibold">${c.name}</p><p class="text-sm text-gray-600 dark:text-gray-400">${c.description}</p></div>`).join('')}
+                            </div>
+                         </div>`;
+                
+                // Palettes Card
+                html += `<div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg mb-2 text-gray-800 dark:text-white">🎨 Palet Warna Populer</h4>
+                            <div class="space-y-3">
+                                ${data.palettes.map(p => `<div><p class="font-semibold">${p.name}</p><p class="text-sm text-gray-600 dark:text-gray-400">${p.description}</p></div>`).join('')}
+                            </div>
+                         </div>`;
+
+                html += `</div>`;
+                trendAnalysisOutput.innerHTML = html;
+            }
+        })();
+
+
+        // Initialize the first page
+        showPage('page-metadata-generator');
+    })();
+    </script>
+</body>
+</html>
